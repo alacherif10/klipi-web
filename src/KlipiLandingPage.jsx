@@ -1462,16 +1462,7 @@ export default function App() {
               <span>• Built for Tunisia’s Creator Economy</span>
             </div>
 
-            <div className="flex items-center gap-4">
-              <span>Tunis • Sousse • Sfax</span>
-              <button
-                type="button"
-                onClick={() => setFounderDrawerOpen(true)}
-                className="text-[11px] font-medium text-[#52525B] hover:text-[#09090B] underline underline-offset-2"
-              >
-                Founder View: Export Waitlist CSV ({waitlist.length})
-              </button>
-            </div>
+            
           </div>
         </div>
       </footer>
