@@ -1,60 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Search,
   CheckCircle2,
-  SlidersHorizontal,
   X,
   Copy,
   Check,
-  ArrowUpRight,
-  Plus,
-  Clock,
+  Flame,
   ShieldCheck,
   AlertTriangle,
-  Wallet,
-  Sparkles,
-  ExternalLink,
-  Flame,
-  Eye,
-  DollarSign,
+  Lock,
+  Zap,
   TrendingUp,
+  ExternalLink
 } from 'lucide-react';
 
-// --- 3 Custom Minimalist Geometric SVG Logo Options for Klipi (klipi.tn) ---
-const KlipiLogo = ({ variant = 1 }) => {
-  if (variant === 1) {
-    // Option 1: Razor-Sliced Play Wedge
-    return (
-      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="28" height="28" rx="7" fill="#09090B" />
-        <path d="M9.5 7.5L17.5 12.2L9.5 16.9V7.5Z" fill="#FFFFFF" />
-        <path d="M11.5 19.2L20.5 14L11.5 21.5V19.2Z" fill="#10B981" />
-        <line x1="7" y1="18.5" x2="21" y2="10.5" stroke="#09090B" strokeWidth="1.8" />
-      </svg>
-    );
-  }
-  if (variant === 2) {
-    // Option 2: Timeline Razor K-Monogram
-    return (
-      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="28" height="28" rx="7" fill="#09090B" />
-        <rect x="8" y="7" width="3" height="14" rx="1" fill="#FFFFFF" />
-        <path d="M12.5 13.5L19 7H22.5L15.5 14L22.5 21H19L12.5 14.5V13.5Z" fill="#10B981" />
-      </svg>
-    );
-  }
-  // Option 3: Rounded Frame Aperture
-  return (
-    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="28" height="28" rx="7" fill="#10B981" />
-      <rect x="4" y="4" width="20" height="20" rx="5" fill="#09090B" />
-      <path d="M11.5 9.5L19 14L11.5 18.5V9.5Z" fill="#FFFFFF" />
-      <circle cx="19.5" cy="8.5" r="1.5" fill="#10B981" />
+// --- PROPRIETARY KLIPI BRAND LOGO MARK (Film-Cut K with Play Caret) ---
+const KlipiLogo = ({ size = 'w-9 h-9' }) => (
+  <div className={`${size} relative rounded-xl bg-gradient-to-b from-[#181924] to-[#0D0E14] border border-white/[0.12] p-1.5 flex items-center justify-center shadow-md shadow-black/50 group-hover:border-[#00F090]/50 transition-all duration-300 shrink-0`}>
+    <svg viewBox="0 0 28 28" fill="none" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+      {/* Vertical Spine (Film Strip / 9:16 Video Frame Stem) */}
+      <rect x="4" y="4" width="4" height="20" rx="2" fill="#FFFFFF" />
+      {/* Upper Sliced Film Blade */}
+      <path d="M10.5 13L18.5 4.5H23L14 14L10.5 13Z" fill="#00F090" />
+      {/* Lower Sliced Film Blade (Play Angle) */}
+      <path d="M12.5 12L21.5 23.5H17L9.5 13.5L12.5 12Z" fill="#00F090" fillOpacity="0.88" />
+      {/* Precision Cut Play Caret Notch */}
+      <path d="M14.5 11.5L18.5 14L14.5 16.5V11.5Z" fill="#0D0E14" />
     </svg>
-  );
-};
+  </div>
+);
 
-// --- Initial Tunisian Marketplace Bounties ---
+// --- RECENT VERIFIED PAYOUT ACTIVITY (Content Rewards live social proof ticker) ---
+const RECENT_LIVE_ACTIVITIES = [
+  { id: 1, type: 'payout', user: '@farouk_clips', amount: '187.50 DT', method: 'D17', creator: '@kamelgaming.tn', views: '75K', time: '2m ago' },
+  { id: 2, type: 'deposit', user: '@yalladelivery.tn', amount: '3,000 DT', method: 'Escrow', desc: 'Pre-funded Promo Code Bounty Pool', time: '8m ago' },
+  { id: 3, type: 'payout', user: '@sarra.edit', amount: '300.00 DT', method: 'Flouci', creator: '@tunisianfounders', views: '100K', time: '14m ago' },
+  { id: 4, type: 'payout', user: '@mehdi_fx', amount: '450.00 DT', method: 'Bank RIB', creator: '@derbycafe.tn', views: '180K', time: '29m ago' },
+  { id: 5, type: 'deposit', user: '@kamelgaming.tn', amount: '2,000 DT', method: 'Escrow', desc: 'Pre-funded Season 4 Kick Stream Pool', time: '41m ago' },
+  { id: 6, type: 'payout', user: '@amine_reels', amount: '95.00 DT', method: 'D17', creator: '@sami.irl', views: '43K', time: '52m ago' },
+];
+
+// --- INITIAL TUNISIAN BOUNTIES WITH RICH VISUAL BANNERS & METRICS ---
 const INITIAL_BOUNTIES = [
   {
     id: 'b1',
@@ -62,9 +48,16 @@ const INITIAL_BOUNTIES = [
     handle: '@kamelgaming.tn',
     verified: true,
     category: 'Gaming & Kick',
-    avatarBg: 'bg-zinc-900 text-white',
+    audience: '142K on Kick',
+    payoutRate: '100% Payout Rate',
+    totalPaidOut: '3,840 DT',
+    bannerGradient: 'from-purple-900/80 via-[#1A1429] to-[#111218]',
+    bannerBorder: 'border-purple-500/20',
+    avatarBg: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
+    tagBg: 'bg-purple-500/15 text-purple-300 border-purple-500/25',
     initials: 'KG',
-    title: 'Kick Ranked Rage & Funny Moments (Season 4)',
+    themeBadge: 'GTA RP & Kick Live',
+    title: 'Kick Ranked Rage & Funny Moments (Season 4 Heist)',
     cpmTnd: 2.5,
     minViews: 2000,
     maxPerClipTnd: 250,
@@ -75,22 +68,30 @@ const INITIAL_BOUNTIES = [
       'Must keep @kamelgaming.tn watermark visible in top corner',
       'Minimum 2,000 organic views to unlock payout',
       'Include #KamelTN in video caption',
+      '48h anti-bot hold before D17/Flouci disbursement'
     ],
     hotTimestamps: [
-      { time: '01:14:22', label: '1v5 Clutch + Mic Drop', spike: '420 msg/min' },
-      { time: '02:48:05', label: 'Chat Troll Donation Reaction', spike: '380 msg/min' },
-      { time: '03:19:40', label: 'Surprise Guest Call-in', spike: '510 msg/min' },
+      { time: '01:14:22', label: '1v5 Clutch + Mic Drop', spike: '+420 msg/min' },
+      { time: '02:48:05', label: 'Chat Troll Donation Reaction', spike: '+380 msg/min' },
+      { time: '03:19:40', label: 'Surprise Guest Call-in', spike: '+510 msg/min' },
     ],
   },
   {
     id: 'b2',
-    creator: 'Tunisian Tech & Startup Pod',
+    creator: 'Tunisian Founders Pod',
     handle: '@tunisianfounders',
     verified: true,
     category: 'Podcasts',
-    avatarBg: 'bg-emerald-700 text-white',
+    audience: '85K on YouTube',
+    payoutRate: '100% Payout Rate',
+    totalPaidOut: '2,420 DT',
+    bannerGradient: 'from-blue-900/80 via-[#131B2E] to-[#111218]',
+    bannerBorder: 'border-blue-500/20',
+    avatarBg: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
+    tagBg: 'bg-blue-500/15 text-blue-300 border-blue-500/25',
     initials: 'TF',
-    title: 'Viral Clips: Ep. 18 — Building SaaS from Tunis to Europe',
+    themeBadge: 'Tech & Startups',
+    title: 'Viral Clips: Ep. 18 — Building SaaS from Tunis to $10K MRR',
     cpmTnd: 3.0,
     minViews: 1500,
     maxPerClipTnd: 300,
@@ -101,6 +102,7 @@ const INITIAL_BOUNTIES = [
       'Add clean Arabic/French dynamic subtitles',
       'Tag @tunisianfounders in caption & bio link',
       'No misleading clickbait overlays',
+      'Views verified via TikTok & IG API'
     ],
     hotTimestamps: [
       { time: '00:24:10', label: 'Why Stripe & Local Payments Matter', spike: 'High Retention' },
@@ -109,12 +111,19 @@ const INITIAL_BOUNTIES = [
   },
   {
     id: 'b3',
-    creator: 'YallaDelivery Tunisia',
+    creator: 'YallaDelivery TN',
     handle: '@yalladelivery.tn',
     verified: true,
     category: 'Apps & Brands',
-    avatarBg: 'bg-amber-600 text-white',
+    audience: '210K on TikTok',
+    payoutRate: '100% Payout Rate',
+    totalPaidOut: '5,100 DT',
+    bannerGradient: 'from-emerald-900/80 via-[#11241C] to-[#111218]',
+    bannerBorder: 'border-emerald-500/20',
+    avatarBg: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
+    tagBg: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/25',
     initials: 'YD',
+    themeBadge: 'Consumer App & Food',
     title: 'Promo Code "KLIPI10" — Street Food & Late Night Cravings',
     cpmTnd: 4.0,
     minViews: 3000,
@@ -126,6 +135,7 @@ const INITIAL_BOUNTIES = [
       'Show promo code KLIPI10 on screen for at least 3 seconds',
       'Tunisia audience targeting (FR/Derja captions)',
       'Max 3 clips per creator account',
+      'Verified payout via D17 or Bank Transfer'
     ],
     hotTimestamps: [
       { time: '00:04:15', label: 'B-Roll Pack: TND 10 Discount Reveal', spike: 'Brand Kit' },
@@ -138,9 +148,16 @@ const INITIAL_BOUNTIES = [
     handle: '@derbycafe.tn',
     verified: true,
     category: 'Sports',
-    avatarBg: 'bg-rose-600 text-white',
+    audience: '95K on IG & FB',
+    payoutRate: '100% Payout Rate',
+    totalPaidOut: '1,960 DT',
+    bannerGradient: 'from-rose-900/80 via-[#24131A] to-[#111218]',
+    bannerBorder: 'border-rose-500/20',
+    avatarBg: 'bg-rose-500/20 text-rose-300 border-rose-500/30',
+    tagBg: 'bg-rose-500/15 text-rose-300 border-rose-500/25',
     initials: 'DC',
-    title: 'Champions League Live Watch-Along Reactions',
+    themeBadge: 'Football & Live Debates',
+    title: 'Champions League Live Watch-Along Reactions & Studio Debates',
     cpmTnd: 2.0,
     minViews: 2500,
     maxPerClipTnd: 200,
@@ -150,11 +167,11 @@ const INITIAL_BOUNTIES = [
     rules: [
       'Include match score ticker overlay',
       'Must be uploaded within 24h of final whistle',
-      'No copyrighted UEFA broadcast audio tracks',
+      'No copyrighted UEFA broadcast audio tracks'
     ],
     hotTimestamps: [
-      { time: '01:48:12', label: '90+4 Last-Minute Goal Studio Eruption', spike: '690 msg/min' },
-      { time: '02:05:30', label: 'Post-Match Tactical Rant', spike: '410 msg/min' },
+      { time: '01:48:12', label: '90+4 Last-Minute Goal Studio Eruption', spike: '+690 msg/min' },
+      { time: '02:05:30', label: 'Post-Match Tactical Rant', spike: '+410 msg/min' },
     ],
   },
   {
@@ -163,8 +180,15 @@ const INITIAL_BOUNTIES = [
     handle: '@sami.irl',
     verified: false,
     category: 'Gaming & Kick',
-    avatarBg: 'bg-sky-700 text-white',
+    audience: '58K on Kick',
+    payoutRate: '98% Payout Rate',
+    totalPaidOut: '880 DT',
+    bannerGradient: 'from-sky-900/80 via-[#12202E] to-[#111218]',
+    bannerBorder: 'border-sky-500/20',
+    avatarBg: 'bg-sky-500/20 text-sky-300 border-sky-500/30',
+    tagBg: 'bg-sky-500/15 text-sky-300 border-sky-500/25',
     initials: 'SI',
+    themeBadge: 'IRL Street Vlogs',
     title: 'La Goulette to Sidi Bou Said Night IRL Stream Highlights',
     cpmTnd: 2.2,
     minViews: 1500,
@@ -174,11 +198,11 @@ const INITIAL_BOUNTIES = [
     platforms: ['TikTok', 'Shorts'],
     rules: [
       'Keep @sami.irl Kick handle pinned in comments',
-      'Vertical 9:16 crop only (no black bars)',
+      'Vertical 9:16 crop only (no black bars)'
     ],
     hotTimestamps: [
-      { time: '00:39:18', label: 'Street Musician Improv Duet', spike: '340 msg/min' },
-      { time: '01:55:02', label: 'Midnight Brik Taste Test', spike: '295 msg/min' },
+      { time: '00:39:18', label: 'Street Musician Improv Duet', spike: '+340 msg/min' },
+      { time: '01:55:02', label: 'Midnight Brik Taste Test', spike: '+295 msg/min' },
     ],
   },
   {
@@ -187,8 +211,15 @@ const INITIAL_BOUNTIES = [
     handle: '@konnect.network',
     verified: true,
     category: 'Apps & Brands',
-    avatarBg: 'bg-indigo-700 text-white',
+    audience: '45K on LinkedIn',
+    payoutRate: '100% Payout Rate',
+    totalPaidOut: '3,200 DT',
+    bannerGradient: 'from-indigo-900/80 via-[#18162E] to-[#111218]',
+    bannerBorder: 'border-indigo-500/20',
+    avatarBg: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30',
+    tagBg: 'bg-indigo-500/15 text-indigo-300 border-indigo-500/25',
     initials: 'KP',
+    themeBadge: 'Fintech & Payments',
     title: 'Freelancers Getting Paid Fast in Tunisia — Creator Clips',
     cpmTnd: 3.5,
     minViews: 2000,
@@ -199,6 +230,7 @@ const INITIAL_BOUNTIES = [
     rules: [
       'Use official Konnect app screen-recording assets',
       'Tag @konnect.network in description',
+      'Highlight zero-bureaucracy instant cashouts'
     ],
     hotTimestamps: [
       { time: '00:02:40', label: 'Instant Payment Link Demo', spike: 'Brand Kit' },
@@ -267,7 +299,6 @@ const INITIAL_SUBMISSIONS = [
 
 export default function ClipBountyApp() {
   const [activeTab, setActiveTab] = useState('discover'); // 'discover' | 'campaigns'
-  const [logoVariant, setLogoVariant] = useState(1); // 1 | 2 | 3
   const [walletTnd, setWalletTnd] = useState(142.5);
 
   // Discover state
@@ -280,7 +311,18 @@ export default function ClipBountyApp() {
   const [clipPlatform, setClipPlatform] = useState('TikTok');
   const [copiedTimestamp, setCopiedTimestamp] = useState(null);
   const [trackedClips, setTrackedClips] = useState(INITIAL_TRACKED_CLIPS);
+  const [showTrackedStrip, setShowTrackedStrip] = useState(true);
   const [submitSuccessToast, setSubmitSuccessToast] = useState('');
+
+  // Live Payout Ticker State
+  const [activeTickerIdx, setActiveTickerIdx] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveTickerIdx((prev) => (prev + 1) % RECENT_LIVE_ACTIVITIES.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, []);
 
   // Cashout modal state
   const [cashoutOpen, setCashoutOpen] = useState(false);
@@ -337,7 +379,7 @@ export default function ClipBountyApp() {
     setTrackedClips([newClip, ...trackedClips]);
     setClipUrlInput('');
     setSelectedBounty(null);
-    setSubmitSuccessToast('Clip submitted! View tracking started.');
+    setSubmitSuccessToast('Clip submitted! View tracking active.');
     setTimeout(() => setSubmitSuccessToast(''), 3500);
   };
 
@@ -368,8 +410,15 @@ export default function ClipBountyApp() {
       handle: '@kamelgaming.tn',
       verified: true,
       category: newCampaign.category,
-      avatarBg: 'bg-zinc-900 text-white',
+      audience: '142K on Kick',
+      payoutRate: '100% Payout Rate',
+      totalPaidOut: '0 DT',
+      bannerGradient: 'from-purple-900/80 via-[#1A1429] to-[#111218]',
+      bannerBorder: 'border-purple-500/20',
+      avatarBg: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
+      tagBg: 'bg-purple-500/15 text-purple-300 border-purple-500/25',
       initials: 'KG',
+      themeBadge: 'New Live Bounty',
       title: newCampaign.title.trim(),
       cpmTnd: cpm,
       minViews: Number(newCampaign.minViews) || 2000,
@@ -378,11 +427,11 @@ export default function ClipBountyApp() {
       remainingPoolTnd: pool,
       platforms: ['TikTok', 'Reels', 'Shorts'],
       rules: [
-        'Keep @kamelgaming.tn watermark visible',
+        'Keep @kamelgaming.tn watermark visible in top corner',
         `Minimum ${newCampaign.minViews} organic views required`,
       ],
       hotTimestamps: [
-        { time: '00:45:10', label: 'Auto-Detected Chat Spike Moment', spike: '450 msg/min' },
+        { time: '00:45:10', label: 'Auto-Detected Chat Spike Moment', spike: '+450 msg/min' },
       ],
     };
 
@@ -397,7 +446,7 @@ export default function ClipBountyApp() {
       maxPerClipTnd: '150',
     });
     setActiveTab('discover');
-    setSubmitSuccessToast('Live bounty published to marketplace!');
+    setSubmitSuccessToast('Bounty published with pre-funded escrow!');
     setTimeout(() => setSubmitSuccessToast(''), 3500);
   };
 
@@ -421,82 +470,76 @@ export default function ClipBountyApp() {
       )
     : 0;
 
+  const currentActivity = RECENT_LIVE_ACTIVITIES[activeTickerIdx];
+
   return (
-    <div className="min-h-screen bg-[#F9FAFB] text-zinc-950 font-sans antialiased">
+    <div className="min-h-screen bg-[#08080C] text-[#F3F4F6] font-sans antialiased selection:bg-[#00F090]/20 selection:text-white">
       {/* Toast Notification */}
       {submitSuccessToast && (
-        <div className="fixed bottom-5 right-5 z-50 flex items-center gap-2.5 bg-zinc-950 text-white text-sm font-medium px-4 py-3 rounded-xl shadow-lg border border-zinc-800">
-          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+        <div className="fixed bottom-5 right-5 z-50 flex items-center gap-2.5 bg-[#111218] text-white text-sm font-medium px-4 py-3 rounded-xl shadow-2xl border border-[#00F090]/30 animate-fade-in">
+          <CheckCircle2 className="w-4 h-4 text-[#00F090] shrink-0" />
           <span>{submitSuccessToast}</span>
         </div>
       )}
 
       {/* 56px Sticky Top Navigation */}
-      <header className="sticky top-0 z-30 h-14 bg-white/95 backdrop-blur border-b border-zinc-200 px-4 sm:px-6">
+      <header className="sticky top-0 z-30 h-16 bg-[#08080C]/90 backdrop-blur-md border-b border-white/[0.06] px-4 sm:px-6">
         <div className="max-w-7xl mx-auto h-full flex items-center justify-between gap-4">
-          {/* Left: Klipi Brand + Live 3-Logo Switcher */}
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2">
-              <KlipiLogo variant={logoVariant} />
-              <span className="font-bold tracking-tight text-lg text-zinc-950">
-                klipi<span className="text-emerald-600">.tn</span>
-              </span>
-            </div>
-
-            {/* Subtle 1-2-3 Logo Variant Toggle for User Validation */}
-            <div
-              className="hidden sm:flex items-center bg-zinc-100 border border-zinc-200 rounded-md p-0.5 text-[11px] font-medium"
-              title="Switch logo concept"
-            >
-              {[1, 2, 3].map((v) => (
-                <button
-                  key={v}
-                  onClick={() => setLogoVariant(v)}
-                  className={`px-1.5 py-0.5 rounded transition ${
-                    logoVariant === v
-                      ? 'bg-white text-zinc-950 shadow-xs font-semibold'
-                      : 'text-zinc-500 hover:text-zinc-800'
-                  }`}
+          <div className="flex items-center gap-6">
+            <a href="/" className="flex items-center gap-3 group">
+              <KlipiLogo size="w-8 h-8" />
+              <div className="flex items-center">
+                <span
+                  className="text-xl font-black tracking-[-0.03em] text-white group-hover:text-[#00F090] transition duration-200"
+                  style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                 >
-                  {v}
-                </button>
-              ))}
-            </div>
+                  klipi
+                </span>
+                <span className="text-[10px] font-bold font-mono text-[#00F090] bg-[#00F090]/10 border border-[#00F090]/25 px-1.5 py-0.5 rounded ml-1.5 tracking-wider uppercase">
+                  TN
+                </span>
+              </div>
+            </a>
+
+            <span className="hidden sm:inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-[#00F090] bg-[#00F090]/10 border border-[#00F090]/20 px-2.5 py-0.5 rounded-full">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#00F090] live-dot" />
+              Marketplace Demo
+            </span>
           </div>
 
-          {/* Center: 2-Mode Segmented Switcher */}
-          <nav className="flex items-center bg-zinc-100 p-1 rounded-lg border border-zinc-200/80">
+          {/* Segmented Switcher (Discover vs Streamer Studio) */}
+          <nav className="flex items-center bg-[#12131A] p-1 rounded-xl border border-white/[0.06]">
             <button
               onClick={() => setActiveTab('discover')}
-              className={`px-3.5 py-1.5 rounded-md text-xs sm:text-sm font-medium transition ${
+              className={`px-4 py-1.5 rounded-lg text-xs font-bold transition ${
                 activeTab === 'discover'
-                  ? 'bg-white text-zinc-950 shadow-xs'
-                  : 'text-zinc-600 hover:text-zinc-950'
+                  ? 'bg-white text-black shadow-sm'
+                  : 'text-slate-400 hover:text-white'
               }`}
             >
               Discover Bounties
             </button>
             <button
               onClick={() => setActiveTab('campaigns')}
-              className={`px-3.5 py-1.5 rounded-md text-xs sm:text-sm font-medium transition ${
+              className={`px-4 py-1.5 rounded-lg text-xs font-bold transition ${
                 activeTab === 'campaigns'
-                  ? 'bg-white text-zinc-950 shadow-xs'
-                  : 'text-zinc-600 hover:text-zinc-950'
+                  ? 'bg-white text-black shadow-sm'
+                  : 'text-slate-400 hover:text-white'
               }`}
             >
-              My Campaigns
+              Streamer Studio
             </button>
           </nav>
 
           {/* Right: TND Wallet Pill */}
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-2 bg-zinc-50 border border-zinc-200 rounded-lg pl-3 pr-1.5 py-1">
-              <span className="text-xs sm:text-sm font-semibold tabular-nums text-zinc-900">
-                {walletTnd.toFixed(2)} <span className="text-emerald-600">DT</span>
+            <div className="flex items-center gap-2.5 bg-[#12131A] border border-white/[0.08] rounded-xl pl-3.5 pr-1.5 py-1.5">
+              <span className="text-xs font-bold text-white font-mono-num">
+                {walletTnd.toFixed(2)} <span className="text-[#00F090] font-semibold">DT</span>
               </span>
               <button
                 onClick={() => setCashoutOpen(true)}
-                className="bg-zinc-950 hover:bg-zinc-800 text-white text-xs font-medium px-2.5 py-1 rounded-md transition"
+                className="bg-[#00F090] hover:bg-[#00D680] text-[#041F16] text-xs font-black px-3 py-1 rounded-lg transition shadow-sm"
               >
                 Cashout
               </button>
@@ -505,72 +548,124 @@ export default function ClipBountyApp() {
         </div>
       </header>
 
-      {/* Main Content Container */}
+      {/* --- CONTENT REWARDS BENCHMARK: SUBTLE LIVE PAYOUT TICKER --- */}
+      <div className="bg-[#0B0C10] border-b border-white/[0.05] py-2 px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-[#00F090] bg-[#00F090]/10 border border-[#00F090]/25 px-2 py-0.5 rounded shrink-0">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#00F090] live-dot" />
+              Live Activity
+            </span>
+            <div className="text-slate-300 truncate font-mono-num text-[11px] sm:text-xs">
+              {currentActivity.type === 'payout' ? (
+                <>
+                  <span className="text-[#00F090] font-bold">{currentActivity.user}</span> received{' '}
+                  <span className="text-white font-bold">{currentActivity.amount}</span> via{' '}
+                  <span className="text-white font-semibold">{currentActivity.method}</span>{' '}
+                  <span className="text-slate-500">({currentActivity.views} views • {currentActivity.creator})</span>
+                </>
+              ) : (
+                <>
+                  <span className="text-[#00F090] font-bold">{currentActivity.user}</span> pre-funded{' '}
+                  <span className="text-white font-bold">{currentActivity.amount}</span> in escrow (
+                  {currentActivity.desc})
+                </>
+              )}
+              <span className="text-slate-500 ml-2">({currentActivity.time})</span>
+            </div>
+          </div>
+
+          <div className="hidden lg:flex items-center gap-4 shrink-0 text-[11px] text-slate-400">
+            <span className="flex items-center gap-1.5">
+              <Lock className="w-3.5 h-3.5 text-[#00F090]" /> 100% Pre-funded Escrow
+            </span>
+            <span className="text-white/20">•</span>
+            <span className="flex items-center gap-1.5">
+              <Zap className="w-3.5 h-3.5 text-amber-400" /> D17 & Flouci Instant Rails
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
         {activeTab === 'discover' ? (
           <>
-            {/* Clipper Active Tracked Clips Strip */}
-            <section className="mb-6">
-              <div className="flex items-center justify-between mb-2.5">
-                <h2 className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
-                  My Tracked Clips ({trackedClips.length})
-                </h2>
-                <span className="text-xs text-zinc-500">Auto-syncs TikTok, Reels & Shorts every 15m</span>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {trackedClips.map((clip) => (
-                  <div
-                    key={clip.id}
-                    className="bg-white border border-zinc-200 rounded-xl px-4 py-3 flex items-center justify-between gap-3"
-                  >
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-semibold px-2 py-0.5 rounded bg-zinc-100 text-zinc-700">
-                          {clip.platform}
-                        </span>
-                        <p className="text-sm font-medium text-zinc-900 truncate">
-                          {clip.bountyTitle}
-                        </p>
-                      </div>
-                      <p className="text-xs text-zinc-500 truncate mt-0.5">{clip.url}</p>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <div className="text-sm font-semibold tabular-nums text-zinc-950">
-                        {clip.views.toLocaleString()} views
-                      </div>
-                      <div className="flex items-center justify-end gap-1.5 mt-0.5">
-                        <span
-                          className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${
-                            clip.status === 'Verified & Paid'
-                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                              : 'bg-amber-50 text-amber-700 border border-amber-200'
-                          }`}
-                        >
-                          {clip.status}
-                        </span>
-                        {clip.earnedTnd > 0 && (
-                          <span className="text-xs font-semibold text-emerald-600 tabular-nums">
-                            +{clip.earnedTnd.toFixed(2)} DT
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
+            {/* Discover Header with Integrated Stats Ribbon */}
+            <div className="mb-6 space-y-4">
+              <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div>
+                  <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                    Discover Active Clip Bounties
+                  </h1>
+                  <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl">
+                    Browse pre-funded campaigns from verified Tunisian streamers and brands. Create clips, submit your video link, and get paid directly to your D17 or Flouci wallet.
+                  </p>
+                </div>
 
-            {/* Search & Category Filter Toolbar */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-5">
-              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+                {/* Sleek Horizontal Trust Ribbon */}
+                <div className="flex items-center gap-2 bg-[#12131A] border border-white/[0.08] rounded-xl px-3.5 py-2 text-xs">
+                  <span className="w-2 h-2 rounded-full bg-[#00F090] live-dot" />
+                  <span className="text-slate-400">Total Active Escrow:</span>
+                  <span className="text-white font-bold font-mono-num">11,800 DT</span>
+                </div>
+              </div>
+
+              {/* Minimal Trust Features Bar (Slim, not bulky) */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
+                <div className="bg-[#101117] border border-white/[0.05] rounded-xl p-2.5 flex items-center gap-2.5">
+                  <div className="w-7 h-7 rounded-lg bg-[#00F090]/10 border border-[#00F090]/20 flex items-center justify-center shrink-0">
+                    <Lock className="w-3.5 h-3.5 text-[#00F090]" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-[11px] font-bold text-white truncate">100% Escrow Guarantee</p>
+                    <p className="text-[10px] text-slate-400 truncate">Pool locked before launch</p>
+                  </div>
+                </div>
+
+                <div className="bg-[#101117] border border-white/[0.05] rounded-xl p-2.5 flex items-center gap-2.5">
+                  <div className="w-7 h-7 rounded-lg bg-amber-400/10 border border-amber-400/20 flex items-center justify-center shrink-0">
+                    <Zap className="w-3.5 h-3.5 text-amber-400" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-[11px] font-bold text-white truncate">Direct D17 & Flouci</p>
+                    <p className="text-[10px] text-slate-400 truncate">Min 10 DT • Zero bank fees</p>
+                  </div>
+                </div>
+
+                <div className="bg-[#101117] border border-white/[0.05] rounded-xl p-2.5 flex items-center gap-2.5">
+                  <div className="w-7 h-7 rounded-lg bg-blue-400/10 border border-blue-400/20 flex items-center justify-center shrink-0">
+                    <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-[11px] font-bold text-white truncate">48h Anti-Fraud Hold</p>
+                    <p className="text-[10px] text-slate-400 truncate">SMM bot protection</p>
+                  </div>
+                </div>
+
+                <div className="bg-[#101117] border border-white/[0.05] rounded-xl p-2.5 flex items-center gap-2.5">
+                  <div className="w-7 h-7 rounded-lg bg-purple-400/10 border border-purple-400/20 flex items-center justify-center shrink-0">
+                    <TrendingUp className="w-3.5 h-3.5 text-purple-400" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-[11px] font-bold text-white truncate">100% Payout Rate</p>
+                    <p className="text-[10px] text-slate-400 truncate">Verified Tunisian creators</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Filter Toolbar */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-6">
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 bg-[#12131A] p-1 rounded-xl border border-white/[0.06]">
                 {categories.map((cat) => (
                   <button
                     key={cat}
                     onClick={() => setSelectedCategory(cat)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap border transition ${
+                    className={`px-3.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition ${
                       selectedCategory === cat
-                        ? 'bg-zinc-950 text-white border-zinc-950'
-                        : 'bg-white text-zinc-600 border-zinc-200 hover:border-zinc-300 hover:text-zinc-950'
+                        ? 'bg-white text-black shadow-sm'
+                        : 'text-slate-400 hover:text-white'
                     }`}
                   >
                     {cat}
@@ -578,20 +673,86 @@ export default function ClipBountyApp() {
                 ))}
               </div>
 
-              <div className="relative w-full sm:w-64">
-                <Search className="w-4 h-4 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <div className="relative w-full sm:w-72">
+                <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search streamer or campaign..."
-                  className="w-full bg-white border border-zinc-200 rounded-lg pl-9 pr-3 py-1.5 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-zinc-400"
+                  placeholder="Search streamer, game or brand..."
+                  className="w-full bg-[#12131A] border border-white/[0.08] rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#00F090]"
                 />
               </div>
             </div>
 
-            {/* 3-Column Bounty Cards Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {/* Active Tracked Clips Collapsible Bar */}
+            {trackedClips.length > 0 && (
+              <div className="mb-6 bg-[#111218] border border-white/[0.06] rounded-2xl p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-white uppercase tracking-wider">
+                      My Tracked Clips ({trackedClips.length})
+                    </span>
+                    <span className="text-[10px] text-[#00F090] bg-[#00F090]/10 border border-[#00F090]/20 px-2 py-0.5 rounded-full font-semibold">
+                      Auto-Syncing
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => setShowTrackedStrip(!showTrackedStrip)}
+                    className="text-xs text-slate-400 hover:text-white transition"
+                  >
+                    {showTrackedStrip ? 'Hide' : 'Show'}
+                  </button>
+                </div>
+
+                {showTrackedStrip && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {trackedClips.map((clip) => (
+                      <div
+                        key={clip.id}
+                        className="bg-black/40 border border-white/[0.06] rounded-xl px-4 py-3 flex items-center justify-between gap-3"
+                      >
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-white/5 border border-white/10 text-slate-300">
+                              {clip.platform}
+                            </span>
+                            <p className="text-xs font-semibold text-white truncate">
+                              {clip.bountyTitle}
+                            </p>
+                          </div>
+                          <p className="text-[11px] text-slate-400 truncate mt-0.5">{clip.url}</p>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <div className="text-xs font-bold font-mono-num text-white">
+                            {clip.views.toLocaleString()} views
+                          </div>
+                          <div className="flex items-center justify-end gap-1.5 mt-0.5">
+                            <span
+                              className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                                clip.status === 'Verified & Paid'
+                                  ? 'bg-[#00F090]/10 text-[#00F090] border border-[#00F090]/20'
+                                  : 'bg-amber-400/10 text-amber-400 border border-amber-400/20'
+                              }`}
+                            >
+                              {clip.status}
+                            </span>
+                            {clip.earnedTnd > 0 && (
+                              <span className="text-xs font-bold text-[#00F090] font-mono-num">
+                                +{clip.earnedTnd.toFixed(2)} DT
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* --- BENCHMARKED BOUNTY CARDS (WITH COVER BANNERS LIKE CONTENT REWARDS) --- */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredBounties.map((bounty) => {
                 const pctLeft = Math.round((bounty.remainingPoolTnd / bounty.totalPoolTnd) * 100);
                 return (
@@ -601,73 +762,92 @@ export default function ClipBountyApp() {
                       setSelectedBounty(bounty);
                       setEstimatedViews(25000);
                     }}
-                    className="group bg-white border border-zinc-200 hover:border-zinc-400 rounded-xl p-4 flex flex-col justify-between cursor-pointer transition shadow-2xs"
+                    className="group bg-[#111218] border border-white/[0.07] hover:border-white/20 rounded-2xl overflow-hidden cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:shadow-2xl flex flex-col justify-between"
                   >
                     <div>
-                      {/* Card Header */}
-                      <div className="flex items-start justify-between gap-3 mb-3">
-                        <div className="flex items-center gap-2.5 min-w-0">
-                          <div
-                            className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${bounty.avatarBg}`}
-                          >
+                      {/* 16:9 Stylized Campaign Cover Banner */}
+                      <div className={`relative h-36 sm:h-40 banner-pattern bg-gradient-to-br ${bounty.bannerGradient} p-3.5 flex flex-col justify-between border-b ${bounty.bannerBorder}`}>
+                        <div className="flex items-center justify-between">
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${bounty.tagBg}`}>
+                            {bounty.themeBadge}
+                          </span>
+
+                          <span className="bg-[#08080C]/85 backdrop-blur-md border border-[#00F090]/30 text-[#00F090] text-xs font-extrabold px-2.5 py-1 rounded-lg font-mono-num shadow-sm">
+                            {bounty.cpmTnd.toFixed(2)} DT / 1K
+                          </span>
+                        </div>
+
+                        {/* Subtle banner title overlay */}
+                        <div className="flex items-end justify-between">
+                          <span className="text-[10px] font-semibold text-white/60 uppercase tracking-wider">
+                            {bounty.category}
+                          </span>
+                          <span className="text-[10px] bg-black/40 backdrop-blur-sm text-slate-300 px-2 py-0.5 rounded font-mono-num">
+                            Cap: {bounty.maxPerClipTnd} DT
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Card Content Area */}
+                      <div className="p-4 space-y-3">
+                        {/* Streamer Profile Row */}
+                        <div className="flex items-center gap-3">
+                          <div className={`w-10 h-10 rounded-xl border flex items-center justify-center font-bold text-xs shrink-0 ${bounty.avatarBg}`}>
                             {bounty.initials}
                           </div>
                           <div className="min-w-0">
-                            <div className="flex items-center gap-1">
-                              <span className="text-sm font-semibold text-zinc-900 truncate">
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-sm font-bold text-white truncate group-hover:text-[#00F090] transition">
                                 {bounty.creator}
                               </span>
                               {bounty.verified && (
-                                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                                <CheckCircle2 className="w-3.5 h-3.5 text-[#00F090] shrink-0" />
                               )}
                             </div>
-                            <span className="text-xs text-zinc-500 block truncate">
-                              {bounty.handle}
-                            </span>
+                            <div className="flex items-center gap-1.5 text-xs text-slate-400">
+                              <span className="text-[11px] font-mono-num text-slate-300">{bounty.audience}</span>
+                              <span>•</span>
+                              <span className="text-[11px] text-[#00F090] font-medium">{bounty.payoutRate}</span>
+                            </div>
                           </div>
                         </div>
 
-                        {/* Emerald CPM Badge */}
-                        <span className="shrink-0 bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold px-2.5 py-1 rounded-md tabular-nums">
-                          {bounty.cpmTnd.toFixed(2)} DT / 1K
-                        </span>
-                      </div>
+                        {/* Campaign Title */}
+                        <h3 className="text-sm font-semibold text-slate-100 leading-snug line-clamp-2 pt-0.5">
+                          {bounty.title}
+                        </h3>
 
-                      {/* Campaign Title */}
-                      <h3 className="text-sm font-medium text-zinc-900 leading-snug mb-3 line-clamp-2 group-hover:text-zinc-950">
-                        {bounty.title}
-                      </h3>
-
-                      {/* Platform Pills & Threshold */}
-                      <div className="flex flex-wrap items-center gap-1.5 mb-4">
-                        {bounty.platforms.map((p) => (
-                          <span
-                            key={p}
-                            className="text-[11px] font-medium bg-zinc-100 text-zinc-700 px-2 py-0.5 rounded"
-                          >
-                            {p}
+                        {/* Platforms & Min Views */}
+                        <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                          {bounty.platforms.map((p) => (
+                            <span
+                              key={p}
+                              className="text-[10px] font-semibold bg-white/5 border border-white/5 text-slate-300 px-2 py-0.5 rounded"
+                            >
+                              {p}
+                            </span>
+                          ))}
+                          <span className="text-[10px] text-slate-400 ml-auto font-mono-num">
+                            Min {bounty.minViews.toLocaleString()} views
                           </span>
-                        ))}
-                        <span className="text-[11px] text-zinc-500 ml-auto tabular-nums">
-                          Min {bounty.minViews.toLocaleString()} views • Max {bounty.maxPerClipTnd} DT
-                        </span>
+                        </div>
                       </div>
                     </div>
 
                     {/* Escrow Progress Footer */}
-                    <div className="pt-3 border-t border-zinc-100">
-                      <div className="flex items-center justify-between text-xs mb-1.5 tabular-nums">
-                        <span className="font-semibold text-zinc-900">
+                    <div className="p-4 pt-3 border-t border-white/[0.06] bg-[#0E0F15] space-y-1.5">
+                      <div className="flex items-center justify-between text-xs font-mono-num">
+                        <span className="font-semibold text-slate-300 text-[11px]">
                           {bounty.remainingPoolTnd.toLocaleString()} DT{' '}
-                          <span className="font-normal text-zinc-500">
-                            / {bounty.totalPoolTnd.toLocaleString()} DT left
+                          <span className="font-normal text-slate-500">
+                            / {bounty.totalPoolTnd.toLocaleString()} DT in escrow
                           </span>
                         </span>
-                        <span className="font-medium text-emerald-600">{pctLeft}% left</span>
+                        <span className="font-bold text-[#00F090] text-[11px]">{pctLeft}% left</span>
                       </div>
-                      <div className="w-full h-1.5 bg-zinc-100 rounded-full overflow-hidden">
+                      <div className="w-full h-1.5 bg-white/[0.08] rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-emerald-500 rounded-full"
+                          className="h-full bg-[#00F090] rounded-full transition-all duration-300"
                           style={{ width: `${pctLeft}%` }}
                         />
                       </div>
@@ -678,89 +858,98 @@ export default function ClipBountyApp() {
             </div>
           </>
         ) : (
-          /* STREAMER / BRAND STUDIO ("My Campaigns") */
+          /* Streamer Studio */
           <div className="space-y-6">
-            {/* 4-KPI Strip */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-              <div className="bg-white border border-zinc-200 rounded-xl p-4">
-                <span className="text-xs font-medium text-zinc-500">Escrow Pool Remaining</span>
-                <div className="text-2xl font-bold tabular-nums text-zinc-950 mt-1">
-                  {escrowRemaining.toLocaleString()} <span className="text-sm text-emerald-600">DT</span>
+              <div className="bounty-card rounded-2xl p-4">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Escrow Pool Remaining</span>
+                <div className="text-2xl font-black font-mono-num text-white mt-1">
+                  {escrowRemaining.toLocaleString()} <span className="text-sm text-[#00F090]">DT</span>
                 </div>
-                <span className="text-[11px] text-zinc-500 mt-1 block">Protected in TND escrow</span>
+                <span className="text-[11px] text-slate-500 mt-1 block">Locked in Klipi escrow contract</span>
               </div>
-              <div className="bg-white border border-zinc-200 rounded-xl p-4">
-                <span className="text-xs font-medium text-zinc-500">Verified Organic Views</span>
-                <div className="text-2xl font-bold tabular-nums text-zinc-950 mt-1">412,800</div>
-                <span className="text-[11px] text-emerald-600 mt-1 block">+18.4% vs last stream</span>
-              </div>
-              <div className="bg-white border border-zinc-200 rounded-xl p-4">
-                <span className="text-xs font-medium text-zinc-500">Active Clippers</span>
-                <div className="text-2xl font-bold tabular-nums text-zinc-950 mt-1">34</div>
-                <span className="text-[11px] text-zinc-500 mt-1 block">Across TikTok, Reels & Shorts</span>
-              </div>
-              <div className="bg-white border border-zinc-200 rounded-xl p-4">
-                <span className="text-xs font-medium text-zinc-500">Bot Fraud Blocked</span>
-                <div className="text-2xl font-bold tabular-nums text-rose-600 mt-1">
-                  {fraudBlockedTnd.toFixed(0)} <span className="text-sm">DT</span>
+              <div className="bounty-card rounded-2xl p-4">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Total Views Generated</span>
+                <div className="text-2xl font-black font-mono-num text-white mt-1">
+                  96.9K
                 </div>
-                <span className="text-[11px] text-zinc-500 mt-1 block">Saved by velocity & ratio shield</span>
+                <span className="text-[11px] text-[#00F090] mt-1 block">+18.4K organic views today</span>
+              </div>
+              <div className="bounty-card rounded-2xl p-4">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Fraud Dinars Blocked</span>
+                <div className="text-2xl font-black font-mono-num text-emerald-400 mt-1">
+                  {fraudBlockedTnd.toFixed(2)} <span className="text-sm">DT</span>
+                </div>
+                <span className="text-[11px] text-slate-500 mt-1 block">Saved from SMM bot spikes</span>
+              </div>
+              <div className="bounty-card rounded-2xl p-4">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Active Clippers</span>
+                <div className="text-2xl font-black font-mono-num text-white mt-1">
+                  14
+                </div>
+                <span className="text-[11px] text-slate-500 mt-1 block">Producing across TikTok & Reels</span>
               </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Submissions Review Queue Table */}
-              <div className="lg:col-span-2 bg-white border border-zinc-200 rounded-xl overflow-hidden">
-                <div className="px-4 py-3.5 border-b border-zinc-200 flex items-center justify-between">
+              {/* Clipper Submissions Table */}
+              <div className="lg:col-span-2 bounty-card rounded-2xl p-5 space-y-4">
+                <div className="flex items-center justify-between">
                   <div>
-                    <h2 className="text-sm font-semibold text-zinc-950">Clip Submissions Queue</h2>
-                    <p className="text-xs text-zinc-500">
-                      Approve organic clips to release escrow or reject flagged SMM bot spikes
+                    <h2 className="text-sm font-bold text-white">Incoming Submissions</h2>
+                    <p className="text-xs text-slate-400">
+                      Automatic anti-fraud scoring filters fake views before disbursement.
                     </p>
                   </div>
-                  <span className="text-xs font-medium bg-zinc-100 text-zinc-700 px-2.5 py-1 rounded-md">
-                    {submissions.filter((s) => s.status === 'Pending').length} Pending
+                  <span className="text-xs font-bold px-2 py-0.5 rounded bg-white/5 border border-white/10 text-slate-300 font-mono-num">
+                    {submissions.length} Total
                   </span>
                 </div>
 
-                <div className="divide-y divide-zinc-100">
+                <div className="space-y-2.5">
                   {submissions.map((sub) => (
                     <div
                       key={sub.id}
-                      className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                      className="bg-black/30 border border-white/[0.06] rounded-xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                     >
                       <div className="space-y-1 min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-sm font-semibold text-zinc-900">
-                            {sub.clipperHandle}
-                          </span>
-                          <span className="text-[11px] font-medium bg-zinc-100 text-zinc-700 px-2 py-0.5 rounded">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-white">{sub.clipperHandle}</span>
+                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-slate-400 border border-white/5">
                             {sub.platform}
                           </span>
-                          {sub.trustScore >= 80 ? (
-                            <span className="inline-flex items-center gap-1 text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full">
-                              <ShieldCheck className="w-3 h-3" /> Organic {sub.trustScore}/100
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center gap-1 text-[11px] font-medium bg-rose-50 text-rose-700 border border-rose-200 px-2 py-0.5 rounded-full">
-                              <AlertTriangle className="w-3 h-3" /> Flagged {sub.trustScore}/100
-                            </span>
-                          )}
+                          <span
+                            className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                              sub.trustScore >= 80
+                                ? 'bg-[#00F090]/10 text-[#00F090] border border-[#00F090]/20'
+                                : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
+                            }`}
+                          >
+                            Trust: {sub.trustScore}%
+                          </span>
                         </div>
-
-                        <p className="text-xs text-zinc-500 truncate">{sub.clipUrl}</p>
-
+                        <a
+                          href={sub.clipUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-xs text-slate-400 hover:text-white truncate block flex items-center gap-1"
+                        >
+                          {sub.clipUrl} <ExternalLink className="w-3 h-3 inline" />
+                        </a>
                         {sub.fraudFlag && (
-                          <p className="text-xs text-rose-600 font-medium">{sub.fraudFlag}</p>
+                          <div className="flex items-center gap-1.5 text-xs text-amber-400 mt-1">
+                            <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+                            <span>{sub.fraudFlag}</span>
+                          </div>
                         )}
                       </div>
 
-                      <div className="flex items-center justify-between sm:justify-end gap-4 shrink-0">
-                        <div className="text-left sm:text-right tabular-nums">
-                          <div className="text-sm font-bold text-zinc-950">
+                      <div className="flex items-center gap-4 shrink-0 justify-between sm:justify-end">
+                        <div className="text-right font-mono-num">
+                          <div className="text-sm font-bold text-white">
                             {sub.payoutTnd.toFixed(2)} DT
                           </div>
-                          <div className="text-xs text-zinc-500">
+                          <div className="text-xs text-slate-400">
                             {sub.views.toLocaleString()} views
                           </div>
                         </div>
@@ -769,23 +958,23 @@ export default function ClipBountyApp() {
                           <div className="flex items-center gap-1.5">
                             <button
                               onClick={() => handleSubmissionDecision(sub.id, 'Approved')}
-                              className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium px-3 py-1.5 rounded-lg transition"
+                              className="bg-[#00F090] hover:bg-[#00D680] text-[#041F16] text-xs font-black px-3 py-1.5 rounded-lg transition"
                             >
                               Approve
                             </button>
                             <button
                               onClick={() => handleSubmissionDecision(sub.id, 'Rejected')}
-                              className="bg-white hover:bg-rose-50 text-rose-600 border border-zinc-200 hover:border-rose-200 text-xs font-medium px-3 py-1.5 rounded-lg transition"
+                              className="bg-white/5 hover:bg-rose-500/10 text-rose-400 border border-white/10 hover:border-rose-500/30 text-xs font-semibold px-3 py-1.5 rounded-lg transition"
                             >
                               Reject
                             </button>
                           </div>
                         ) : (
                           <span
-                            className={`text-xs font-semibold px-2.5 py-1 rounded-md ${
+                            className={`text-xs font-bold px-2.5 py-1 rounded-md ${
                               sub.status === 'Approved'
-                                ? 'bg-emerald-50 text-emerald-700'
-                                : 'bg-zinc-100 text-zinc-500'
+                                ? 'bg-[#00F090]/10 text-[#00F090]'
+                                : 'bg-white/5 text-slate-500'
                             }`}
                           >
                             {sub.status}
@@ -797,16 +986,18 @@ export default function ClipBountyApp() {
                 </div>
               </div>
 
-              {/* Launch New Bounty Form */}
-              <div className="bg-white border border-zinc-200 rounded-xl p-4">
-                <h2 className="text-sm font-semibold text-zinc-950 mb-1">Launch New Bounty</h2>
-                <p className="text-xs text-zinc-500 mb-4">
-                  Deposit TND into escrow and let Tunisian clippers distribute your stream.
-                </p>
+              {/* Launch New Bounty */}
+              <div className="bounty-card rounded-2xl p-5 space-y-4">
+                <div>
+                  <h2 className="text-sm font-bold text-white mb-0.5">Launch New Bounty</h2>
+                  <p className="text-xs text-slate-400">
+                    Lock Dinars in escrow to mobilize Tunisian clippers.
+                  </p>
+                </div>
 
                 <form onSubmit={handleCreateCampaign} className="space-y-3">
                   <div>
-                    <label className="block text-xs font-medium text-zinc-700 mb-1">
+                    <label className="block text-xs font-semibold text-slate-300 mb-1">
                       Campaign Title
                     </label>
                     <input
@@ -814,22 +1005,20 @@ export default function ClipBountyApp() {
                       required
                       value={newCampaign.title}
                       onChange={(e) => setNewCampaign({ ...newCampaign, title: e.target.value })}
-                      placeholder="e.g., Kick Night Stream Best Moments"
-                      className="w-full border border-zinc-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-zinc-400"
+                      placeholder="e.g. Kick Stream Ranked Clutches"
+                      className="w-full bg-black/40 border border-white/[0.1] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#00F090]"
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-2.5">
                     <div>
-                      <label className="block text-xs font-medium text-zinc-700 mb-1">
+                      <label className="block text-xs font-semibold text-slate-300 mb-1">
                         Category
                       </label>
                       <select
                         value={newCampaign.category}
-                        onChange={(e) =>
-                          setNewCampaign({ ...newCampaign, category: e.target.value })
-                        }
-                        className="w-full border border-zinc-200 rounded-lg px-2.5 py-2 text-sm bg-white focus:outline-none focus:border-zinc-400"
+                        onChange={(e) => setNewCampaign({ ...newCampaign, category: e.target.value })}
+                        className="w-full bg-black/40 border border-white/[0.1] rounded-xl px-2.5 py-2 text-xs text-white focus:outline-none focus:border-[#00F090]"
                       >
                         <option>Gaming & Kick</option>
                         <option>Podcasts</option>
@@ -838,24 +1027,22 @@ export default function ClipBountyApp() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-zinc-700 mb-1">
+                      <label className="block text-xs font-semibold text-slate-300 mb-1">
                         Total Pool (DT)
                       </label>
                       <input
                         type="number"
                         min="50"
                         value={newCampaign.totalPoolTnd}
-                        onChange={(e) =>
-                          setNewCampaign({ ...newCampaign, totalPoolTnd: e.target.value })
-                        }
-                        className="w-full border border-zinc-200 rounded-lg px-3 py-2 text-sm tabular-nums focus:outline-none focus:border-zinc-400"
+                        onChange={(e) => setNewCampaign({ ...newCampaign, totalPoolTnd: e.target.value })}
+                        className="w-full bg-black/40 border border-white/[0.1] rounded-xl px-3 py-2 text-xs font-mono-num text-white focus:outline-none focus:border-[#00F090]"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-2.5">
                     <div>
-                      <label className="block text-xs font-medium text-zinc-700 mb-1">
+                      <label className="block text-xs font-semibold text-slate-300 mb-1">
                         Rate (DT / 1K views)
                       </label>
                       <input
@@ -863,33 +1050,29 @@ export default function ClipBountyApp() {
                         step="0.1"
                         min="0.5"
                         value={newCampaign.cpmTnd}
-                        onChange={(e) =>
-                          setNewCampaign({ ...newCampaign, cpmTnd: e.target.value })
-                        }
-                        className="w-full border border-zinc-200 rounded-lg px-3 py-2 text-sm tabular-nums focus:outline-none focus:border-zinc-400"
+                        onChange={(e) => setNewCampaign({ ...newCampaign, cpmTnd: e.target.value })}
+                        className="w-full bg-black/40 border border-white/[0.1] rounded-xl px-3 py-2 text-xs font-mono-num text-white focus:outline-none focus:border-[#00F090]"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-zinc-700 mb-1">
+                      <label className="block text-xs font-semibold text-slate-300 mb-1">
                         Max Cap / Clip (DT)
                       </label>
                       <input
                         type="number"
                         min="20"
                         value={newCampaign.maxPerClipTnd}
-                        onChange={(e) =>
-                          setNewCampaign({ ...newCampaign, maxPerClipTnd: e.target.value })
-                        }
-                        className="w-full border border-zinc-200 rounded-lg px-3 py-2 text-sm tabular-nums focus:outline-none focus:border-zinc-400"
+                        onChange={(e) => setNewCampaign({ ...newCampaign, maxPerClipTnd: e.target.value })}
+                        className="w-full bg-black/40 border border-white/[0.1] rounded-xl px-3 py-2 text-xs font-mono-num text-white focus:outline-none focus:border-[#00F090]"
                       />
                     </div>
                   </div>
 
                   <button
                     type="submit"
-                    className="w-full bg-zinc-950 hover:bg-zinc-800 text-white text-sm font-medium py-2.5 rounded-lg transition mt-2"
+                    className="w-full bg-[#00F090] hover:bg-[#00D680] text-[#041F16] text-xs font-black py-2.5 rounded-xl transition shadow-md mt-2 flex items-center justify-center gap-1.5"
                   >
-                    Fund Escrow & Publish Bounty
+                    <Lock className="w-3.5 h-3.5" /> Fund Escrow & Publish Bounty
                   </button>
                 </form>
               </div>
@@ -898,161 +1081,212 @@ export default function ClipBountyApp() {
         )}
       </main>
 
-      {/* Slide-Over Campaign Details & Submission Drawer */}
+      {/* Slide-Over Campaign Brief & Submission Drawer */}
       {selectedBounty && (
-        <div className="fixed inset-0 z-40 flex justify-end bg-zinc-950/30 backdrop-blur-[1px]">
-          <div className="w-full max-w-lg bg-white h-full border-l border-zinc-200 shadow-2xl flex flex-col justify-between overflow-y-auto">
-            <div className="p-6 space-y-5">
-              {/* Drawer Header */}
-              <div className="flex items-start justify-between gap-3">
+        <div className="fixed inset-0 z-40 flex justify-end bg-black/75 backdrop-blur-sm">
+          <div className="w-full max-w-lg bg-[#0E0F15] h-full border-l border-white/10 shadow-2xl flex flex-col justify-between overflow-y-auto animate-slide-left">
+            <div>
+              {/* Drawer Hero Banner */}
+              <div className={`relative h-36 bg-gradient-to-br ${selectedBounty.bannerGradient} p-5 flex flex-col justify-between border-b ${selectedBounty.bannerBorder}`}>
+                <div className="flex items-center justify-between">
+                  <span className={`text-xs font-bold px-2.5 py-0.5 rounded-md border ${selectedBounty.tagBg}`}>
+                    {selectedBounty.category}
+                  </span>
+                  <button
+                    onClick={() => setSelectedBounty(null)}
+                    className="w-8 h-8 rounded-full bg-black/50 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white transition"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <div className="flex items-end justify-between">
+                  <span className="text-xs bg-[#08080C]/90 text-[#00F090] font-black px-3 py-1 rounded-lg border border-[#00F090]/30 font-mono-num">
+                    {selectedBounty.cpmTnd.toFixed(2)} DT / 1,000 views
+                  </span>
+                  <span className="text-xs text-white/80 font-mono-num">
+                    Cap: {selectedBounty.maxPerClipTnd} DT
+                  </span>
+                </div>
+              </div>
+
+              {/* Drawer Body Content */}
+              <div className="p-6 space-y-5">
                 <div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded">
-                      {selectedBounty.cpmTnd.toFixed(2)} DT / 1,000 views
-                    </span>
-                    <span className="text-xs text-zinc-500">{selectedBounty.category}</span>
-                  </div>
-                  <h2 className="text-lg font-bold text-zinc-950 mt-2 leading-snug">
+                  <h2 className="text-xl font-black text-white leading-snug">
                     {selectedBounty.title}
                   </h2>
-                  <p className="text-xs text-zinc-500 mt-0.5">
-                    by {selectedBounty.creator} ({selectedBounty.handle})
-                  </p>
-                </div>
-                <button
-                  onClick={() => setSelectedBounty(null)}
-                  className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              {/* Hot VOD Chat-Spike Timestamps */}
-              <div className="bg-zinc-50 border border-zinc-200 rounded-xl p-4">
-                <div className="flex items-center justify-between mb-2.5">
-                  <span className="text-xs font-semibold text-zinc-900 flex items-center gap-1.5">
-                    <Flame className="w-3.5 h-3.5 text-amber-500" /> Hot VOD Timestamps (Chat Spikes)
-                  </span>
-                  <span className="text-[11px] text-zinc-500">Click to copy timecode</span>
-                </div>
-                <div className="space-y-2">
-                  {selectedBounty.hotTimestamps.map((ts) => (
-                    <div
-                      key={ts.time}
-                      onClick={() => handleCopyTimestamp(ts.time)}
-                      className="bg-white border border-zinc-200 hover:border-zinc-400 rounded-lg px-3 py-2 flex items-center justify-between cursor-pointer transition"
-                    >
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <span className="font-mono text-xs font-semibold bg-zinc-900 text-white px-2 py-0.5 rounded">
-                          {ts.time}
-                        </span>
-                        <span className="text-xs font-medium text-zinc-800 truncate">
-                          {ts.label}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2 shrink-0">
-                        <span className="text-[11px] text-emerald-700 font-medium">{ts.spike}</span>
-                        {copiedTimestamp === ts.time ? (
-                          <Check className="w-3.5 h-3.5 text-emerald-600" />
-                        ) : (
-                          <Copy className="w-3.5 h-3.5 text-zinc-400" />
-                        )}
-                      </div>
+                  <div className="flex items-center gap-2 mt-2">
+                    <div className={`w-6 h-6 rounded-md border flex items-center justify-center text-[10px] font-bold ${selectedBounty.avatarBg}`}>
+                      {selectedBounty.initials}
                     </div>
-                  ))}
+                    <span className="text-xs text-white font-bold">{selectedBounty.creator}</span>
+                    <span className="text-xs text-slate-400 font-mono-num">({selectedBounty.handle})</span>
+                    <span className="text-xs text-[#00F090] font-semibold">• {selectedBounty.audience}</span>
+                  </div>
                 </div>
-              </div>
 
-              {/* Mandatory Rules */}
-              <div>
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-500 mb-2">
-                  Campaign Rules
-                </h3>
-                <ul className="space-y-1.5">
-                  {selectedBounty.rules.map((rule, idx) => (
-                    <li key={idx} className="text-xs text-zinc-700 flex items-start gap-2">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                      <span>{rule}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Interactive Earnings Estimator Slider */}
-              <div className="bg-emerald-50/60 border border-emerald-200/80 rounded-xl p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-semibold text-zinc-800">Payout Simulator</span>
-                  <span className="text-base font-bold text-emerald-700 tabular-nums">
-                    {calculatedEstimate.toFixed(2)} DT
-                  </span>
+                {/* Verified Escrow Protection Banner */}
+                <div className="bg-[#12131C] border border-white/[0.08] rounded-xl p-3.5 flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-[#00F090]/10 border border-[#00F090]/20 flex items-center justify-center shrink-0 mt-0.5">
+                    <Lock className="w-4 h-4 text-[#00F090]" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h4 className="text-xs font-bold text-white">100% Escrow Backed Campaign</h4>
+                      <span className="text-[10px] font-bold text-[#00F090] bg-[#00F090]/10 px-1.5 py-0.5 rounded">
+                        VERIFIED
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">
+                      <strong className="text-white font-mono-num">{selectedBounty.remainingPoolTnd.toLocaleString()} DT</strong> is pre-deposited in escrow. Payouts are guaranteed upon reaching verified views.
+                    </p>
+                  </div>
                 </div>
-                <input
-                  type="range"
-                  min={selectedBounty.minViews}
-                  max={150000}
-                  step={1000}
-                  value={estimatedViews}
-                  onChange={(e) => setEstimatedViews(Number(e.target.value))}
-                  className="w-full accent-emerald-600 cursor-pointer"
-                />
-                <div className="flex justify-between text-[11px] text-zinc-500 mt-1 tabular-nums">
-                  <span>{estimatedViews.toLocaleString()} views</span>
-                  <span>Cap: {selectedBounty.maxPerClipTnd} DT / clip</span>
-                </div>
-              </div>
 
-              {/* Submit Clip Form */}
-              <form onSubmit={handleClipSubmit} className="space-y-3 pt-2 border-t border-zinc-200">
-                <label className="block text-xs font-semibold text-zinc-900">
-                  Submit Your Published Clip URL
-                </label>
-                <div className="flex gap-2">
-                  <select
-                    value={clipPlatform}
-                    onChange={(e) => setClipPlatform(e.target.value)}
-                    className="border border-zinc-200 rounded-lg px-2.5 py-2 text-sm bg-white font-medium text-zinc-800"
-                  >
-                    {selectedBounty.platforms.map((p) => (
-                      <option key={p} value={p}>
-                        {p}
-                      </option>
+                {/* Hot VOD Timestamps */}
+                <div className="bg-black/40 border border-white/[0.08] rounded-2xl p-4 space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                      <Flame className="w-3.5 h-3.5 text-amber-400" /> Hot VOD Timestamps (Chat Spikes)
+                    </span>
+                    <span className="text-[11px] text-slate-400">Click to copy</span>
+                  </div>
+                  <div className="space-y-2">
+                    {selectedBounty.hotTimestamps.map((ts) => (
+                      <div
+                        key={ts.time}
+                        onClick={() => handleCopyTimestamp(ts.time)}
+                        className="bg-white/5 border border-white/5 hover:border-[#00F090]/30 rounded-xl px-3 py-2 flex items-center justify-between cursor-pointer transition"
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <span className="font-mono-num text-xs font-bold bg-[#00F090] text-[#041F16] px-2 py-0.5 rounded">
+                            {ts.time}
+                          </span>
+                          <span className="text-xs font-medium text-slate-200 truncate">
+                            {ts.label}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span className="text-[11px] text-[#00F090] font-bold font-mono-num">{ts.spike}</span>
+                          {copiedTimestamp === ts.time ? (
+                            <Check className="w-3.5 h-3.5 text-[#00F090]" />
+                          ) : (
+                            <Copy className="w-3.5 h-3.5 text-slate-500" />
+                          )}
+                        </div>
+                      </div>
                     ))}
-                  </select>
-                  <input
-                    type="url"
-                    required
-                    value={clipUrlInput}
-                    onChange={(e) => setClipUrlInput(e.target.value)}
-                    placeholder="https://www.tiktok.com/@you/video/..."
-                    className="flex-1 border border-zinc-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-zinc-400"
-                  />
+                  </div>
                 </div>
-                <button
-                  type="submit"
-                  className="w-full bg-zinc-950 hover:bg-zinc-800 text-white text-sm font-medium py-2.5 rounded-lg transition"
-                >
-                  Submit Clip & Start View Tracking
-                </button>
-              </form>
+
+                {/* Rules & Anti-Bot Policy */}
+                <div>
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
+                    Campaign Rules & Verification
+                  </h3>
+                  <ul className="space-y-2">
+                    {selectedBounty.rules.map((rule, idx) => (
+                      <li key={idx} className="text-xs text-slate-300 flex items-start gap-2">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-[#00F090] shrink-0 mt-0.5" />
+                        <span>{rule}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Payout Simulator */}
+                <div className="bg-[#00F090]/5 border border-[#00F090]/15 rounded-2xl p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-bold text-white">Estimated Payout</span>
+                    <span className="text-base font-black text-[#00F090] font-mono-num">
+                      {calculatedEstimate.toFixed(2)} DT
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min={selectedBounty.minViews}
+                    max={150000}
+                    step={1000}
+                    value={estimatedViews}
+                    onChange={(e) => setEstimatedViews(Number(e.target.value))}
+                    className="w-full accent-[#00F090] cursor-pointer"
+                  />
+                  <div className="flex justify-between text-[11px] text-slate-400 mt-1 font-mono-num">
+                    <span>{estimatedViews.toLocaleString()} views</span>
+                    <span>Cap: {selectedBounty.maxPerClipTnd} DT / clip</span>
+                  </div>
+                </div>
+
+                {/* Payout Channels Accepted */}
+                <div>
+                  <span className="text-[11px] text-slate-400 font-semibold block mb-1.5">Direct Cashout Rails</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] bg-white/5 border border-white/10 px-2.5 py-1 rounded-lg text-slate-300 font-mono-num">
+                      D17 (La Poste)
+                    </span>
+                    <span className="text-[11px] bg-white/5 border border-white/10 px-2.5 py-1 rounded-lg text-slate-300 font-mono-num">
+                      Flouci Wallet
+                    </span>
+                    <span className="text-[11px] bg-white/5 border border-white/10 px-2.5 py-1 rounded-lg text-slate-300 font-mono-num">
+                      Bank RIB (20-digit)
+                    </span>
+                  </div>
+                </div>
+
+                {/* Submit URL Form */}
+                <form onSubmit={handleClipSubmit} className="space-y-3 pt-3 border-t border-white/[0.08]">
+                  <label className="block text-xs font-bold text-white">
+                    Submit Published Clip URL
+                  </label>
+                  <div className="flex gap-2">
+                    <select
+                      value={clipPlatform}
+                      onChange={(e) => setClipPlatform(e.target.value)}
+                      className="border border-white/10 bg-black/40 text-white rounded-xl px-2.5 py-2 text-xs font-bold focus:outline-none"
+                    >
+                      {selectedBounty.platforms.map((p) => (
+                        <option key={p} value={p}>
+                          {p}
+                        </option>
+                      ))}
+                    </select>
+                    <input
+                      type="url"
+                      required
+                      value={clipUrlInput}
+                      onChange={(e) => setClipUrlInput(e.target.value)}
+                      placeholder="https://www.tiktok.com/@you/video/..."
+                      className="flex-1 border border-white/10 bg-black/40 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#00F090]"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="w-full bg-[#00F090] hover:bg-[#00D680] text-[#041F16] text-xs font-black py-3 rounded-xl transition shadow-lg shadow-[#00F090]/15"
+                  >
+                    Submit Clip & Start View Tracking
+                  </button>
+                </form>
+              </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Local Tunisian Cashout Modal (D17 / Flouci / RIB) */}
+      {/* Cashout Modal */}
       {cashoutOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/40 p-4">
-          <div className="bg-white border border-zinc-200 rounded-2xl max-w-md w-full p-6 shadow-xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+          <div className="bg-[#111218] border border-white/10 rounded-3xl max-w-md w-full p-6 shadow-2xl">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="text-base font-bold text-zinc-950">Withdraw Earnings (TND)</h3>
-                <p className="text-xs text-zinc-500">
-                  Available balance: <strong className="text-emerald-600">{walletTnd.toFixed(2)} DT</strong>
+                <h3 className="text-base font-black text-white">Withdraw Earnings (TND)</h3>
+                <p className="text-xs text-slate-400">
+                  Available balance: <strong className="text-[#00F090] font-mono-num">{walletTnd.toFixed(2)} DT</strong>
                 </p>
               </div>
               <button
                 onClick={() => setCashoutOpen(false)}
-                className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-900"
+                className="p-1.5 text-slate-400 hover:text-white"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1060,16 +1294,16 @@ export default function ClipBountyApp() {
 
             {cashoutDone ? (
               <div className="py-8 text-center space-y-2">
-                <CheckCircle2 className="w-10 h-10 text-emerald-600 mx-auto" />
-                <p className="text-sm font-semibold text-zinc-950">Transfer Initiated!</p>
-                <p className="text-xs text-zinc-500">
-                  Sent to your {cashoutMethod} account. Arrives within minutes.
+                <CheckCircle2 className="w-10 h-10 text-[#00F090] mx-auto" />
+                <p className="text-sm font-bold text-white">Transfer Initiated!</p>
+                <p className="text-xs text-slate-400">
+                  Disbursed via {cashoutMethod}. Arrives in your Tunisian account shortly.
                 </p>
               </div>
             ) : (
               <form onSubmit={handleCashoutSubmit} className="space-y-3.5">
                 <div>
-                  <label className="block text-xs font-medium text-zinc-700 mb-1.5">
+                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
                     Payout Method
                   </label>
                   <div className="grid grid-cols-3 gap-2">
@@ -1078,10 +1312,10 @@ export default function ClipBountyApp() {
                         type="button"
                         key={m}
                         onClick={() => setCashoutMethod(m)}
-                        className={`py-2 rounded-lg text-xs font-semibold border transition ${
+                        className={`py-2 rounded-xl text-xs font-bold border transition ${
                           cashoutMethod === m
-                            ? 'bg-zinc-950 text-white border-zinc-950'
-                            : 'bg-white text-zinc-700 border-zinc-200 hover:border-zinc-400'
+                            ? 'bg-[#00F090] text-[#041F16] border-[#00F090]'
+                            : 'bg-white/5 text-slate-300 border-white/10 hover:border-white/20'
                         }`}
                       >
                         {m}
@@ -1091,40 +1325,49 @@ export default function ClipBountyApp() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-zinc-700 mb-1">
-                    {cashoutMethod === 'RIB / CIB'
-                      ? '20-Digit Tunisian RIB'
-                      : `${cashoutMethod} Phone Number`}
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    {cashoutMethod === 'RIB / CIB' ? '20-Digit Tunisian RIB' : `${cashoutMethod} Mobile Phone Number`}
                   </label>
                   <input
                     type="text"
                     required
                     value={cashoutDestination}
                     onChange={(e) => setCashoutDestination(e.target.value)}
-                    placeholder={cashoutMethod === 'RIB / CIB' ? '08 000 000...' : '+216 20 000 000'}
-                    className="w-full border border-zinc-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-zinc-400"
+                    placeholder={cashoutMethod === 'RIB / CIB' ? '08 000 0000000000000 00' : '+216 20 000 000'}
+                    className="w-full border border-white/10 bg-black/40 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#00F090]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-zinc-700 mb-1">
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">
                     Amount (DT)
                   </label>
                   <input
                     type="number"
-                    min="20"
+                    min="10"
                     max={walletTnd}
                     step="0.5"
                     required
                     value={cashoutAmount}
                     onChange={(e) => setCashoutAmount(e.target.value)}
-                    className="w-full border border-zinc-200 rounded-lg px-3 py-2 text-sm tabular-nums focus:outline-none focus:border-zinc-400"
+                    className="w-full border border-white/10 bg-black/40 rounded-xl px-3 py-2 text-xs font-mono-num text-white focus:outline-none focus:border-[#00F090]"
                   />
+                </div>
+
+                <div className="p-3 bg-white/[0.03] border border-white/[0.06] rounded-xl text-[11px] text-slate-400 space-y-1">
+                  <div className="flex justify-between">
+                    <span>Withdrawal Fee</span>
+                    <span className="text-[#00F090] font-mono-num">0.00 DT (Free)</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Estimated Arrival</span>
+                    <span className="text-white">Instant / Same-day</span>
+                  </div>
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold py-2.5 rounded-lg transition"
+                  className="w-full bg-[#00F090] hover:bg-[#00D680] text-[#041F16] text-xs font-black py-3 rounded-xl transition shadow-lg shadow-[#00F090]/15"
                 >
                   Confirm {cashoutAmount || 0} DT Payout via {cashoutMethod}
                 </button>

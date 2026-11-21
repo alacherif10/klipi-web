@@ -1,417 +1,490 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   CheckCircle2,
   ArrowRight,
   Copy,
   Check,
   ShieldCheck,
-  AlertCircle,
-  Sparkles,
-  Wallet,
-  Scissors,
-  TrendingUp,
   ChevronDown,
-  Download,
   X,
   Lock,
-  Eye,
-  Clock,
-  Users,
+  Flame,
   Zap,
-  ExternalLink,
+  Search,
+  Users,
+  Sparkles,
+  Layers,
+  Radio,
+  Music,
   Smartphone,
-  SlidersHorizontal
+  ShoppingBag,
+  Gamepad2,
+  Sliders,
+  Award
 } from 'lucide-react';
 import { supabase } from './supabaseClient';
 
-// Helper to generate a clean referral code like KLIPI-4829
-const generateRefCode = (handle) => {
-  const clean = handle.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 5) || 'USER';
-  const num = Math.floor(1000 + Math.random() * 9000);
-  return `${clean}-${num}`;
+// Helper to generate a clean referral code
+const generateRefCode = (name) => {
+  const clean = name.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 3) || 'TN';
+  const rand = Math.floor(100 + Math.random() * 900);
+  return `KLIPI-${clean}-${rand}`;
 };
 
-// Inside your form onSubmit handler:
-const handleJoinWaitlist = async (e) => {
-  e.preventDefault();
-  setSubmitting(true);
-  setErrorMsg('');
-
-  const refParam = new URLSearchParams(window.location.search).get('ref');
-  const myRefCode = generateRefCode(handle);
-
-  const { error } = await supabase.from('waitlist').insert([
-    {
-      role, // 'clipper' or 'streamer'
-      handle: handle.trim(),
-      contact: contact.trim(),
-      payout_or_budget: extraField.trim(),
-      referral_code: myRefCode,
-      referred_by: refParam || null,
-    },
-  ]);
-
-  if (error) {
-    setSubmitting(false);
-    if (error.code === '23505') {
-      setErrorMsg('This WhatsApp number or email is already on the Klipi waitlist!');
-    } else {
-      setErrorMsg('Something went wrong. Please try again.');
-    }
-    return;
-  }
-
-  // Fetch live queue position
-  const { data: stats } = await supabase.rpc('get_waitlist_stats');
-  setQueuePosition((stats?.total || 1) + 140); // Optional seed offset or exact stats.total
-  setGeneratedReferralLink(`${window.location.origin}/?ref=${myRefCode}`);
-  setSubmitting(false);
-  setSubmitted(true);
-};
-// --- MINIMALIST PLATFORM SVG ICONS ---
-const TikTokIcon = ({ className = 'w-3.5 h-3.5' }) => (
-  <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
-    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" />
-  </svg>
+// --- PROPRIETARY KLIPI BRAND LOGO MARK (Film-Cut K with Play Caret) ---
+const KlipiLogoMark = ({ size = 'w-9 h-9' }) => (
+  <div className={`${size} relative rounded-xl bg-gradient-to-b from-[#181924] to-[#0D0E14] border border-white/[0.12] p-1.5 flex items-center justify-center shadow-md shadow-black/50 group-hover:border-[#00F59B]/50 transition-all duration-300 shrink-0`}>
+    <svg viewBox="0 0 28 28" fill="none" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+      {/* Vertical Spine (Film Strip / 9:16 Video Frame Stem) */}
+      <rect x="4" y="4" width="4" height="20" rx="2" fill="#FFFFFF" />
+      {/* Upper Sliced Film Blade */}
+      <path d="M10.5 13L18.5 4.5H23L14 14L10.5 13Z" fill="#00F59B" />
+      {/* Lower Sliced Film Blade (Play Angle) */}
+      <path d="M12.5 12L21.5 23.5H17L9.5 13.5L12.5 12Z" fill="#00F59B" fillOpacity="0.88" />
+      {/* Precision Cut Play Caret Notch */}
+      <path d="M14.5 11.5L18.5 14L14.5 16.5V11.5Z" fill="#0D0E14" />
+    </svg>
+  </div>
 );
 
-const InstagramIcon = ({ className = 'w-3.5 h-3.5' }) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-    <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
-    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-    <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
-  </svg>
-);
+// --- PRE-LAUNCH VALIDATION TICKER (Multi-category activity stream) ---
+const RECENT_ACTIVITIES = [
+  { id: 1, user: '@farouk_clips', text: 'reserved spot #47 on Founding Creator Waitlist', badge: 'D17', time: '2m ago' },
+  { id: 2, user: '@yalladelivery.tn', text: 'pledged 3,000 DT food delivery UGC launch bounty', badge: 'Pilot Brand', time: '6m ago' },
+  { id: 3, user: '@sarra.edit', text: 'reserved spot #48 on Founding Creator Waitlist', badge: 'Flouci', time: '11m ago' },
+  { id: 4, user: '@tunisianfounders', text: 'pledged 1,500 DT podcast viral clips pool', badge: 'Pilot Podcast', time: '18m ago' },
+  { id: 5, user: '@amine_ugc', text: 'reserved spot #49 on Founding Creator Waitlist', badge: 'Bank RIB', time: '29m ago' },
+  { id: 6, user: '@konnect.network', text: 'pledged 2,500 DT fintech app demo & UGC bounty', badge: 'Pilot SaaS', time: '41m ago' },
+  { id: 7, user: '@kamelgaming.tn', text: 'pledged 2,000 DT Season 4 Kick stream bounty pool', badge: 'Pilot Streamer', time: '53m ago' },
+];
 
-const ShortsIcon = ({ className = 'w-3.5 h-3.5' }) => (
-  <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
-    <path d="M17.77 10.32l-1.2-.5L18 9.06a3.74 3.74 0 0 0-3.5-6.62L6.94a3.74 3.74 0 0 0 .23 6.74l1.2.49L6 14.93a3.75 3.75 0 0 0 3.5 6.63l8.5-4.5a3.74 3.74 0 0 0-.23-6.74zM10 14.65v-5.3L15 12l-5 2.65z" />
-  </svg>
-);
-
-// --- SIGNATURE KLIPI RAZOR-SLICED PLAY WEDGE LOGO ---
-const KlipiLogoMark = ({ size = 'w-7 h-7' }) => (
-  <svg viewBox="0 0 32 32" fill="none" className={`${size} shrink-0`}>
-    <rect width="32" height="32" rx="8" fill="#09090B" />
-    <path d="M11.5 9.2L22.2 15.6L11.5 18.4V9.2Z" fill="#FFFFFF" />
-    <path d="M11.5 20.2L20.8 17.8L11.5 23.2V20.2Z" fill="#10B981" />
-  </svg>
-);
-
-// --- INITIAL SAMPLE WAITLIST LEADS (TUNISIA) ---
-const SEED_WAITLIST = [
+// --- UPCOMING PILOT BOUNTIES (Brands, SaaS Apps, Podcasts, Music, Streamers) ---
+const BOUNTIES_DATABASE = [
   {
-    id: 'wl-1',
-    role: 'Clipper',
-    name: 'Yassine Ben Ali (@yassine.clips)',
-    contact: '+216 24 819 302',
-    platform: 'TikTok',
-    detail: 'D17 (La Poste)',
-    perk: '+15% Bonus CPM on First 3 Clips',
-    refCode: 'KLIPI-YAS92',
-    joinedAt: '2026-11-18 19:14'
+    id: 'b1',
+    creator: 'Konnect Pay TN',
+    handle: '@konnect.network',
+    bountyType: 'App Demo & UGC',
+    category: 'Apps & SaaS',
+    audience: '45K on LinkedIn & Web',
+    statusBadge: 'Pilot in Pre-Funding',
+    coverImage: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=900&q=80',
+    avatarBg: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30',
+    tagBg: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/35',
+    accentColor: '#38BDF8',
+    initials: 'KP',
+    themeBadge: 'Fintech & Instant Payments',
+    title: 'Freelancers Getting Paid Fast in Tunisia: App Screen Recording & POV',
+    cpmTnd: 3.5,
+    minViews: 2000,
+    maxPerClipTnd: 350,
+    targetPoolTnd: 2500,
+    pledgedPoolTnd: 2500,
+    platforms: ['TikTok', 'Reels', 'Shorts'],
+    rules: [
+      'Show the Konnect instant payment link in mobile screen recording',
+      'Mention zero bureaucracy and instant cashout to Tunisian banks',
+      'Tag @konnect.network and include link in bio/caption',
+      'Views verified via official platform API'
+    ],
+    hotTimestamps: [
+      { time: '00:03:10', label: 'Payment Link Generator Demo', spike: 'Feature Hook' },
+      { time: '00:12:45', label: 'Instant Bank Payout Screen', spike: 'High Retention' },
+    ],
   },
   {
-    id: 'wl-2',
-    role: 'Streamer / Brand',
-    name: 'Rayen Gaming (@rayengamingtn)',
-    contact: 'rayen@gamingtn.com',
-    platform: 'Kick',
-    detail: '1,500 – 3,000 DT / mo',
-    perk: '0% Platform Fee for 30 Days',
-    refCode: 'KLIPI-RAY44',
-    joinedAt: '2026-11-18 21:05'
+    id: 'b2',
+    creator: 'Yalla Delivery TN',
+    handle: '@yalladelivery.tn',
+    bountyType: 'Brand UGC Video',
+    category: 'Brands & E-com',
+    audience: 'Tunisia-wide App',
+    statusBadge: 'Pilot in Pre-Funding',
+    coverImage: 'https://images.unsplash.com/photo-1561758033-d89a9ad46330?auto=format&fit=crop&w=900&q=80',
+    avatarBg: 'bg-[#00F59B]/20 text-[#00F59B] border-[#00F59B]/30',
+    tagBg: 'bg-[#00F59B]/20 text-[#00F59B] border-[#00F59B]/35',
+    accentColor: '#00F59B',
+    initials: 'YD',
+    themeBadge: 'Food Delivery & Promo Code',
+    title: '15-Min Late Night Food Run: Funny Relatable Student POV',
+    cpmTnd: 4.0,
+    minViews: 3000,
+    maxPerClipTnd: 450,
+    targetPoolTnd: 3000,
+    pledgedPoolTnd: 3000,
+    platforms: ['TikTok', 'Reels'],
+    rules: [
+      'Authentic everyday POV video format in Tunisian Darija',
+      'Show prompt food arrival & food unboxing (burger / tacos / pizza)',
+      'Include promo code KLIPI in on-screen sticker & caption',
+      'No bot traffic (verified by engagement & comment audit)'
+    ],
+    hotTimestamps: [
+      { time: '00:05:12', label: 'Order Placement Screen Hook', spike: 'Hook Pattern' },
+      { time: '00:14:45', label: 'Delivery Driver Doorstep Handover', spike: 'High Engagement' },
+    ],
   },
   {
-    id: 'wl-3',
-    role: 'Clipper',
-    name: 'Nourhene Trabelsi (@nour.edits)',
-    contact: 'nourhene.tr@gmail.com',
-    platform: 'Instagram Reels',
-    detail: 'Flouci Wallet',
-    perk: '+15% Bonus CPM on First 3 Clips',
-    refCode: 'KLIPI-NOU18',
-    joinedAt: '2026-11-19 10:42'
+    id: 'b3',
+    creator: 'Tunisian Founders Pod',
+    handle: '@tunisianfounders',
+    bountyType: 'Podcast Clipping',
+    category: 'Podcasts & Shows',
+    audience: '85K on YouTube & Spotify',
+    statusBadge: 'Pilot in Pre-Funding',
+    coverImage: 'https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=900&q=80',
+    avatarBg: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
+    tagBg: 'bg-blue-500/20 text-blue-300 border-blue-500/35',
+    accentColor: '#60A5FA',
+    initials: 'TF',
+    themeBadge: 'Business & Tech Interviews',
+    title: 'Viral Clips: Ep. 18 — Building SaaS from Tunis to $10K MRR',
+    cpmTnd: 3.0,
+    minViews: 1500,
+    maxPerClipTnd: 300,
+    targetPoolTnd: 1500,
+    pledgedPoolTnd: 1500,
+    platforms: ['TikTok', 'Reels'],
+    rules: [
+      'Add clean Arabic/French dynamic animated subtitles',
+      'Tag @tunisianfounders in caption & bio link',
+      'Hook the viewer within the first 3 seconds with high-conviction quote',
+      'Views verified via TikTok & IG API'
+    ],
+    hotTimestamps: [
+      { time: '00:24:10', label: 'Why Stripe & Local Payments Matter in Tunisia', spike: 'High Retention' },
+      { time: '00:52:33', label: 'First $10K MRR Breakdown & Pricing Mistake', spike: 'Top Replay' },
+    ],
   },
   {
-    id: 'wl-4',
-    role: 'Streamer / Brand',
-    name: 'GoRide Tunisia (@goride.tn)',
-    contact: '+216 55 410 988',
-    platform: 'TikTok',
-    detail: '3,000+ DT / mo',
-    perk: '0% Platform Fee for 30 Days',
-    refCode: 'KLIPI-GOR71',
-    joinedAt: '2026-11-19 13:20'
-  }
+    id: 'b4',
+    creator: 'Kafon x Tunis Trap Records',
+    handle: '@kafon.music',
+    bountyType: 'TikTok Sound Promo',
+    category: 'Music & Sounds',
+    audience: '1.2M on TikTok & YouTube',
+    statusBadge: 'Pilot in Pre-Funding',
+    coverImage: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=900&q=80',
+    avatarBg: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
+    tagBg: 'bg-amber-500/20 text-amber-300 border-amber-500/35',
+    accentColor: '#FBBF24',
+    initials: 'KF',
+    themeBadge: 'Trending Audio Launch',
+    title: 'New Single "Sahbi" Audio Drop: Use Official Sound in POV & Edits',
+    cpmTnd: 2.8,
+    minViews: 2000,
+    maxPerClipTnd: 280,
+    targetPoolTnd: 1800,
+    pledgedPoolTnd: 1800,
+    platforms: ['TikTok', 'Reels'],
+    rules: [
+      'Must use the official sound "Sahbi - Kafon" as background audio',
+      'Audio must play for at least 7 seconds in video',
+      'Accepted formats: Car edits, workout POVs, travel vlogs, relatable humor',
+      'Audio usage verified directly through TikTok Sound ID'
+    ],
+    hotTimestamps: [
+      { time: '00:00:15', label: 'Bass Drop Chorus Hook', spike: 'Top Sound Segment' },
+      { time: '00:00:42', label: 'Acoustic Guitar Bridge', spike: 'Vibe Segment' },
+    ],
+  },
+  {
+    id: 'b5',
+    creator: 'Kamel Gaming TN',
+    handle: '@kamelgaming.tn',
+    bountyType: 'Stream Highlight Clipping',
+    category: 'Gaming & Streamers',
+    audience: '142K on Kick',
+    statusBadge: 'Pilot in Pre-Funding',
+    coverImage: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=900&q=80',
+    avatarBg: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
+    tagBg: 'bg-purple-500/20 text-purple-300 border-purple-500/35',
+    accentColor: '#C084FC',
+    initials: 'KG',
+    themeBadge: 'GTA RP & Kick Live',
+    title: 'Kick Ranked Rage & 1v5 Clutches (Season 4 Heist)',
+    cpmTnd: 2.5,
+    minViews: 2000,
+    maxPerClipTnd: 250,
+    targetPoolTnd: 2000,
+    pledgedPoolTnd: 2000,
+    platforms: ['TikTok', 'Reels', 'Shorts'],
+    rules: [
+      'Must keep @kamelgaming.tn watermark visible in top corner',
+      'Include #KamelTN in video caption',
+      'Fast-paced edits with zoom punches on facecam reactions',
+      '48h anti-bot verification before D17/Flouci cashout'
+    ],
+    hotTimestamps: [
+      { time: '01:14:22', label: '1v5 Clutch + Mic Drop', spike: '+420 msg/min' },
+      { time: '02:48:05', label: 'Chat Troll Donation Reaction', spike: '+380 msg/min' },
+      { time: '03:19:40', label: 'Surprise Guest Call-in', spike: '+510 msg/min' },
+    ],
+  },
+  {
+    id: 'b6',
+    creator: 'Derby Café & Gaming',
+    handle: '@derbycafe.tn',
+    bountyType: 'Venue & Match UGC',
+    category: 'Brands & E-com',
+    audience: '32K on Facebook & IG',
+    statusBadge: 'Pilot in Pre-Funding',
+    coverImage: 'https://images.unsplash.com/photo-1517466787929-bc90951d0974?auto=format&fit=crop&w=900&q=80',
+    avatarBg: 'bg-rose-500/20 text-rose-300 border-rose-500/30',
+    tagBg: 'bg-rose-500/20 text-rose-300 border-rose-500/35',
+    accentColor: '#FB7185',
+    initials: 'DC',
+    themeBadge: 'Sports Lounge & Match Debates',
+    title: 'Champions League Live Watch-Along Reactions & Studio Debates',
+    cpmTnd: 2.0,
+    minViews: 2500,
+    maxPerClipTnd: 200,
+    targetPoolTnd: 1200,
+    pledgedPoolTnd: 1200,
+    platforms: ['TikTok', 'Reels'],
+    rules: [
+      'Include Derby Café logo watermark and location tag (Menzah)',
+      'Highlight crowd goal celebration or tactical fan arguments',
+      'Must be uploaded within 24h of final whistle'
+    ],
+    hotTimestamps: [
+      { time: '01:48:12', label: '90+4 Last-Minute Goal Studio Eruption', spike: '+690 msg/min' },
+      { time: '02:05:30', label: 'Post-Match Heated Fan Debate', spike: '+410 msg/min' },
+    ],
+  },
+];
+
+// --- FOUNDING WAITLIST RESERVATIONS (Transparent multi-category demand proof) ---
+const RECENT_RESERVATIONS = [
+  { id: 'res-1', handle: '@farouk_clips', role: 'Video Editor', focus: 'Podcasts & Gaming', channel: 'D17 (La Poste)', spot: '#47', status: 'Reserved' },
+  { id: 'res-2', handle: '@yalladelivery.tn', role: 'Brand', focus: 'Food Delivery App', channel: '3,000 DT Pool', spot: 'Pilot Brand', status: 'Approved' },
+  { id: 'res-3', handle: '@sarra.edit', role: 'Video Editor', focus: 'Interviews & Tech', channel: 'Flouci Wallet', spot: '#48', status: 'Reserved' },
+  { id: 'res-4', handle: '@tunisianfounders', role: 'Podcast', focus: 'Business Podcast', channel: '1,500 DT Pool', spot: 'Pilot Podcast', status: 'Approved' },
+  { id: 'res-5', handle: '@amine_ugc', role: 'UGC Creator', focus: 'Music & App POV', channel: 'Flouci Wallet', spot: '#49', status: 'Reserved' },
+  { id: 'res-6', handle: '@konnect.network', role: 'SaaS / Brand', focus: 'Fintech Payments', channel: '2,500 DT Pool', spot: 'Pilot SaaS', status: 'Approved' },
 ];
 
 const FAQ_ITEMS = [
   {
-    q: 'What is the minimum number of views needed to earn Dinars (DT)?',
-    a: 'Each streamer or brand sets a clear minimum threshold—typically between 1,500 and 3,000 organic views per clip. Once your clip crosses that threshold and passes our view-velocity check, every 1,000 views earns you the campaign’s published CPM rate up to the per-clip cap.'
+    q: 'How does Klipi work compared to Content Rewards?',
+    a: 'Just like Content Rewards, brands, apps, podcasts, musicians, and streamers launch bounty pools with cash locked in escrow. Video editors and UGC creators create short clips or original videos on TikTok & Reels. When your video earns verified views, you get paid automatically in Dinars.'
   },
   {
-    q: 'How does Klipi block fake views and SMM bot panels?',
-    a: 'Every submitted TikTok, Reel, or Short goes through a 3-signal check before funds unlock: (1) continuous view-velocity curve tracking to spot unnatural vertical spikes, (2) view-to-like/comment ratio scoring, and (3) mandatory mention/hashtag verification. Flagged clips are blocked automatically so honest clippers and creators stay protected.'
+    q: 'What types of content can I create or clip?',
+    a: 'Klipi hosts two formats: (1) Clipping Bounties: You download pre-flagged moments from podcasts, interviews, or streams and edit them into viral short videos. (2) UGC & Audio Bounties: You test a mobile app on camera, film a POV for a brand, or use an artist\'s trending song in your video.'
   },
   {
-    q: 'How and when do Tunisian clippers withdraw their earnings?',
-    a: 'Once a clip’s 48-hour verification hold completes and the streamer approves, your balance moves to Available TND (DT). You can cash out starting from 10 DT directly to D17 (La Poste), Flouci, a Tunisian bank RIB/CIB, or mobile top-up (Ooredoo, Orange, Tunisie Telecom).'
+    q: 'How does the Escrow guarantee protect creators?',
+    a: 'Every campaign requires 100% of the bounty budget to be pre-funded in escrow before creators start editing. Funds cannot be pulled or refunded by the advertiser mid-campaign. When your approved video hits view milestones, your payout is guaranteed.'
   },
   {
-    q: 'What happens if a streamer’s campaign ends with unspent money in escrow?',
-    a: 'Any unspent TND remaining in a campaign pool when the timer ends or when a streamer closes the campaign is 100% refundable back to the streamer’s wallet or original payment method—you only ever pay for verified views delivered.'
+    q: 'How and when do I get paid?',
+    a: 'You can withdraw directly to your D17 (La Poste Tunisienne), Flouci Wallet, or any 20-digit Tunisian Bank RIB (Attijari, BIAT, BNA, STB, etc.) from just 10 DT. Founding creators who join the waitlist today receive 0.00 DT withdrawal fees forever.'
   },
   {
-    q: 'Do I need thousands of followers to start clipping on Klipi?',
-    a: 'No. On TikTok, Reels, and Shorts, a brand-new 0-follower theme page can hit 50,000+ views with a strong 3-second hook. Klipi pays strictly for verified video performance, not your follower count.'
+    q: 'I run a brand, app, or podcast in Tunisia. How do I launch a bounty?',
+    a: "Switch the application form below to \"I'm a Brand, App, or Show\". Tell us what you want to promote, set your target bounty budget (e.g. 500 DT), and we will onboard you for our launch cohort to get hundreds of local creators posting for you."
   }
 ];
 
-export default function App() {
-  // Waitlist Persistence in localStorage
+export default function KlipiLandingPage() {
   const [waitlist, setWaitlist] = useState(() => {
     try {
       const saved = localStorage.getItem('klipi_tn_waitlist_v1');
-      return saved ? JSON.parse(saved) : SEED_WAITLIST;
+      return saved ? JSON.parse(saved) : [];
     } catch {
-      return SEED_WAITLIST;
+      return [];
     }
   });
 
-  useEffect(() => {
-    try {
-      localStorage.setItem('klipi_tn_waitlist_v1', JSON.stringify(waitlist));
-    } catch {
-      // ignore storage errors in restricted environments
-    }
-  }, [waitlist]);
+  // Hero Simulator State
+  const [heroViews, setHeroViews] = useState(50000);
+  const heroCpmRate = 3.0;
 
-  // Hero Waitlist Form State
-  const [role, setRole] = useState('Clipper'); // 'Clipper' | 'Streamer / Brand'
+  // Category filter state
+  const [selectedCat, setSelectedCat] = useState('All');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedBounty, setSelectedBounty] = useState(null);
+  const [estimatedViews, setEstimatedViews] = useState(25000);
+  const [copiedTimestamp, setCopiedTimestamp] = useState(null);
+
+  // Form State
+  const [role, setRole] = useState('Creator');
   const [fullName, setFullName] = useState('');
   const [contact, setContact] = useState('');
-  const [platform, setPlatform] = useState('TikTok');
   const [detailField, setDetailField] = useState('D17 (La Poste)');
+  const [categoryInterest, setCategoryInterest] = useState('Video Editing & Subtitles');
+  const [submitting, setSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
   const [submittedEntry, setSubmittedEntry] = useState(null);
   const [copiedRef, setCopiedRef] = useState(false);
 
-  // Sync default conditional select when role switches
+  // Active Live Activity Index
+  const [activityIndex, setActivityIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActivityIndex((prev) => (prev + 1) % RECENT_ACTIVITIES.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, []);
+
   const handleRoleSwitch = (nextRole) => {
     setRole(nextRole);
     setSubmittedEntry(null);
-    if (nextRole === 'Clipper') {
-      setPlatform('TikTok');
+    setErrorMsg('');
+    if (nextRole === 'Creator') {
       setDetailField('D17 (La Poste)');
+      setCategoryInterest('Video Editing & Subtitles');
     } else {
-      setPlatform('Kick');
-      setDetailField('500 – 1,500 DT / mo');
+      setDetailField('500 – 1,500 DT / campaign');
+      setCategoryInterest('Mobile App / SaaS Promotion');
     }
   };
 
-  // Interactive Product Preview Tabs ('marketplace' | 'fraud' | 'wallet')
-  const [previewTab, setPreviewTab] = useState('marketplace');
-  const [selectedMockBounty, setSelectedMockBounty] = useState(0);
-  const [mockReviewState, setMockReviewState] = useState({
-    sub1: 'Pending',
-    sub2: 'Flagged'
-  });
-  const [selectedRail, setSelectedRail] = useState('D17');
-
-  // How It Works Role Toggle
-  const [howRole, setHowRole] = useState('Clipper');
-
-  // FAQ Accordion State
   const [openFaq, setOpenFaq] = useState(0);
 
-  // Founder Admin Waitlist Drawer
-  const [founderDrawerOpen, setFounderDrawerOpen] = useState(false);
-
-  // Dynamic Founding Spots Counters
-  const clipperSpotsLeft = useMemo(() => {
-    const clipperCount = waitlist.filter((w) => w.role === 'Clipper').length;
-    return Math.max(12, 150 - clipperCount);
-  }, [waitlist]);
-
-  const streamerSpotsLeft = useMemo(() => {
-    const streamerCount = waitlist.filter((w) => w.role === 'Streamer / Brand').length;
-    return Math.max(4, 40 - streamerCount);
-  }, [waitlist]);
-
-  // Handle Waitlist Submission
-  const handleWaitlistSubmit = (e) => {
+  const handleWaitlistSubmit = async (e) => {
     e.preventDefault();
     if (!fullName.trim() || !contact.trim()) return;
 
-    const cleanPrefix = fullName
-      .trim()
-      .replace(/[^a-zA-Z0-9]/g, '')
-      .slice(0, 3)
-      .toUpperCase() || 'TN';
-    const randomNum = Math.floor(10 + Math.random() * 89);
+    setSubmitting(true);
+    setErrorMsg('');
+
+    const refCode = generateRefCode(fullName.trim());
+    const refParam = new URLSearchParams(window.location.search).get('ref');
+
+    try {
+      const { error: sbError } = await supabase.from('waitlist').insert([
+        {
+          role: role === 'Creator' ? 'creator' : 'brand',
+          handle: fullName.trim(),
+          contact: contact.trim(),
+          payout_or_budget: `${detailField} (${categoryInterest})`,
+          referral_code: refCode,
+          referred_by: refParam || null,
+        }
+      ]);
+
+      if (sbError) {
+        if (sbError.code === '23505') {
+          setErrorMsg('This WhatsApp number or email is already registered on the waitlist!');
+          setSubmitting(false);
+          return;
+        }
+      }
+    } catch {
+      // offline fallback
+    }
+
+    let queuePos = 50 + waitlist.length;
 
     const newEntry = {
       id: `wl-${Date.now()}`,
       role,
-      name: fullName.trim(),
+      handle: fullName.trim(),
       contact: contact.trim(),
-      platform,
-      detail: detailField,
-      perk:
-        role === 'Clipper'
-          ? '+15% Bonus CPM on First 3 Clips'
-          : '0% Platform Fee for 30 Days',
-      refCode: `KLIPI-${cleanPrefix}${randomNum}`,
-      joinedAt: new Date().toISOString().slice(0, 16).replace('T', ' ')
+      detail: `${detailField} • ${categoryInterest}`,
+      refCode,
+      queue: queuePos,
     };
 
-    setWaitlist((prev) => [newEntry, ...prev]);
-    setSubmittedEntry({
-      ...newEntry,
-      position: waitlist.length + 138 // Realistic early-access queue number
-    });
+    setWaitlist([newEntry, ...waitlist]);
+    setSubmittedEntry(newEntry);
+    setSubmitting(false);
   };
 
-  // Copy Referral Link
-  const handleCopyReferral = () => {
-    if (!submittedEntry) return;
-    const shareUrl = `https://klipi.tn/?ref=${submittedEntry.refCode}`;
-    navigator.clipboard?.writeText(shareUrl);
+  const handleCopyRef = (code) => {
+    const url = `${window.location.origin}?ref=${code}`;
+    navigator.clipboard?.writeText(url);
     setCopiedRef(true);
     setTimeout(() => setCopiedRef(false), 2000);
   };
 
-  // Export Waitlist CSV for Founder
-  const handleExportCsv = () => {
-    const headers = ['ID', 'Role', 'Name / Handle', 'Email or WhatsApp', 'Main Platform', 'Cashout / Budget', 'Founding Perk', 'Referral Code', 'Joined At'];
-    const rows = waitlist.map((item) => [
-      item.id,
-      item.role,
-      `"${item.name.replace(/"/g, '""')}"`,
-      `"${item.contact.replace(/"/g, '""')}"`,
-      item.platform,
-      `"${item.detail.replace(/"/g, '""')}"`,
-      `"${item.perk}"`,
-      item.refCode,
-      item.joinedAt
-    ]);
-    const csvContent =
-      'data:text/csv;charset=utf-8,' +
-      [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
-
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `klipi_tn_waitlist_${new Date().toISOString().slice(0, 10)}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const handleCopyTimestamp = (time) => {
+    navigator.clipboard?.writeText(time);
+    setCopiedTimestamp(time);
+    setTimeout(() => setCopiedTimestamp(null), 1800);
   };
 
-  // Smooth scroll helper
   const scrollToSection = (id) => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // Interactive Mockup Data
-  const mockBounties = [
-    {
-      creator: 'Rayen Gaming',
-      category: 'Gaming & Kick',
-      cpm: '2.50 DT',
-      minViews: '2K views',
-      remaining: '1,420 DT',
-      total: '2,000 DT',
-      pct: 71,
-      title: 'Clip funny rage moments & 1v5 clutches from last night’s Kick stream',
-      spike: '01:14:20 • GTA RP Heist Finale (Chat +420%)'
-    },
-    {
-      creator: 'Coffee & Code Podcast',
-      category: 'Podcasts & Tech',
-      cpm: '1.80 DT',
-      minViews: '3K views',
-      remaining: '2,340 DT',
-      total: '3,000 DT',
-      pct: 78,
-      title: 'High-retention founder stories & salary debates from Episode #68',
-      spike: '00:22:15 • Building SaaS from Tunis (Chat +290%)'
-    },
-    {
-      creator: 'GoRide Tunisia',
-      category: 'Apps & Brands',
-      cpm: '3.20 DT',
-      minViews: '1.5K views',
-      remaining: '3,180 DT',
-      total: '4,000 DT',
-      pct: 80,
-      title: 'Creative reels showing instant campus rides & student promo codes',
-      spike: 'Official B-Roll & Promo Pack Included'
-    }
+  const categories = [
+    { name: 'All', icon: Layers, count: 6 },
+    { name: 'Apps & SaaS', icon: Smartphone, count: 1 },
+    { name: 'Brands & E-com', icon: ShoppingBag, count: 2 },
+    { name: 'Podcasts & Shows', icon: Radio, count: 1 },
+    { name: 'Music & Sounds', icon: Music, count: 1 },
+    { name: 'Gaming & Streamers', icon: Gamepad2, count: 1 }
   ];
 
+  const filteredBounties = BOUNTIES_DATABASE.filter((b) => {
+    const matchesCat = selectedCat === 'All' || b.category === selectedCat;
+    const matchesSearch =
+      b.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      b.creator.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      b.handle.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      b.bountyType.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCat && matchesSearch;
+  });
+
+  const calculatedEstimate = selectedBounty
+    ? Math.min(
+        selectedBounty.maxPerClipTnd,
+        +((estimatedViews / 1000) * selectedBounty.cpmTnd).toFixed(2)
+      )
+    : 0;
+
+  const currentActivity = RECENT_ACTIVITIES[activityIndex];
+
+  // Hero Simulator Output
+  const simulatedHeroPayout = ((heroViews / 1000) * heroCpmRate).toFixed(2);
+
   return (
-    <div className="min-h-screen bg-[#F9FAFB] text-[#09090B] font-sans antialiased selection:bg-emerald-100 selection:text-emerald-950">
+    <div className="min-h-screen bg-[#08090E] text-[#F8FAFC] font-sans antialiased selection:bg-[#00F59B]/25 selection:text-white">
       {/* =====================================================================
-          STICKY GLASSMORPHIC TOP NAVBAR
+          TOP NAVIGATION BAR (Spatial Glass Header)
          ===================================================================== */}
-      <header className="sticky top-0 z-40 h-16 bg-white/85 backdrop-blur-md border-b border-[#E5E7EB]">
-        <div className="max-w-6xl mx-auto h-full px-4 sm:px-6 flex items-center justify-between gap-4">
-          {/* Brand Mark */}
-          <a
-            href="#top"
-            className="flex items-center gap-2.5 focus:outline-none"
-          >
-            <KlipiLogoMark />
-            <div className="flex items-baseline">
-              <span className="text-[20px] font-extrabold tracking-[-0.04em] text-[#09090B]">
-                klipi
-              </span>
-              <span className="text-[13px] font-bold tracking-tight text-[#10B981]">
-                .tn
-              </span>
+      <header className="sticky top-0 z-40 h-16 bg-[#08090E]/90 backdrop-blur-xl border-b border-white/[0.08]">
+        <div className="max-w-7xl mx-auto h-full px-4 sm:px-6 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-8">
+            <a href="#top" className="flex items-center gap-3 group">
+              <KlipiLogoMark size="w-8 h-8" />
+              <div className="flex items-center">
+                <span
+                  className="text-xl font-black tracking-[-0.035em] text-white group-hover:text-[#00F59B] transition duration-200"
+                  style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                >
+                  klipi
+                </span>
+                <span className="text-[10px] font-bold font-mono text-[#00F59B] bg-[#00F59B]/10 border border-[#00F59B]/25 px-1.5 py-0.5 rounded ml-1.5 tracking-wider uppercase">
+                  TN
+                </span>
+              </div>
+            </a>
+
+            <nav className="hidden lg:flex items-center gap-7 text-xs font-semibold text-slate-400">
+              <button onClick={() => scrollToSection('pilot-bounties')} className="hover:text-white transition">Upcoming Bounties</button>
+              <button onClick={() => scrollToSection('roster')} className="hover:text-white transition">Founding Roster</button>
+              <button onClick={() => scrollToSection('how-it-works')} className="hover:text-white transition">How It Works</button>
+              <button onClick={() => scrollToSection('brands')} className="hover:text-white transition">For Brands</button>
+              <button onClick={() => scrollToSection('faq')} className="hover:text-white transition">FAQ</button>
+            </nav>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#11131C] border border-white/[0.08] text-xs">
+              <span className="w-2 h-2 rounded-full bg-[#00F59B] live-dot"></span>
+              <span className="text-slate-400 font-medium hidden sm:inline">Status:</span>
+              <span className="font-bold text-white font-mono text-[11px]">PRIVATE BETA</span>
             </div>
-          </a>
 
-          {/* Navigation Links */}
-          <nav className="hidden md:flex items-center gap-7 text-xs font-medium text-[#52525B]">
-            <button
-              onClick={() => scrollToSection('preview')}
-              className="hover:text-[#09090B] transition-colors"
-            >
-              Product Preview
-            </button>
-            <button
-              onClick={() => scrollToSection('how-it-works')}
-              className="hover:text-[#09090B] transition-colors"
-            >
-              How It Works
-            </button>
-            <button
-              onClick={() => scrollToSection('deals')}
-              className="hover:text-[#09090B] transition-colors"
-            >
-              Early Access Deals
-            </button>
-            <button
-              onClick={() => scrollToSection('faq')}
-              className="hover:text-[#09090B] transition-colors"
-            >
-              FAQ
-            </button>
-          </nav>
-
-          {/* Primary CTA */}
-          <div className="flex items-center gap-2.5">
-            <span className="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-medium text-[#52525B] bg-[#F9FAFB] border border-[#E5E7EB] px-2.5 py-1 rounded-full tabular-nums">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#10B981]" />
-              {waitlist.length + 137} joined
-            </span>
             <button
               onClick={() => scrollToSection('waitlist-form')}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-[#09090B] hover:bg-zinc-800 text-white text-xs font-semibold transition-colors"
+              className="px-4 py-2 rounded-xl bg-[#00F59B] hover:bg-[#00D680] text-[#052014] text-xs font-black transition-all duration-200 flex items-center gap-1.5 shadow-lg shadow-[#00F59B]/15 hover:shadow-[#00F59B]/30 hover:scale-[1.02]"
             >
               <span>Join Waitlist</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -421,907 +494,553 @@ export default function App() {
       </header>
 
       {/* =====================================================================
-          HERO SECTION + EMBEDDED WORKING EARLY ACCESS WAITLIST
+          TICKER BAR (Financial Exchange Style)
          ===================================================================== */}
-      <section id="top" className="pt-12 pb-16 sm:pt-16 sm:pb-24 border-b border-[#E5E7EB]">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
-            {/* Left 6 Cols: Value Proposition */}
-            <div className="lg:col-span-6 space-y-6 pt-2">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-[#E5E7EB] text-xs font-medium text-[#09090B] shadow-2xs">
-                <span className="w-2 h-2 rounded-full bg-[#10B981] animate-pulse" />
-                <span>Tunisia Creator Economy • Early Access Open</span>
+      <div className="bg-[#0B0D13] border-b border-white/[0.06] py-2 px-4 overflow-hidden">
+        <div className="max-w-7xl mx-auto flex items-center justify-between text-xs">
+          <div className="flex items-center gap-3 min-w-0">
+            <span className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-[#00F59B] bg-[#00F59B]/10 border border-[#00F59B]/25 px-2 py-0.5 rounded shrink-0 font-mono">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#00F59B] live-dot"></span>
+              LIVE PLEDGES
+            </span>
+
+            <div className="flex items-center gap-2 truncate text-slate-300 font-mono text-[11px] sm:text-xs">
+              <span className="font-bold text-white truncate">{currentActivity.user}</span>
+              <span className="text-slate-400 truncate">{currentActivity.text}</span>
+            </div>
+          </div>
+
+          <div className="hidden sm:flex items-center gap-3 shrink-0 text-slate-500 font-mono text-[11px]">
+            <span className="px-2 py-0.5 rounded bg-white/[0.04] border border-white/[0.08] text-slate-300 font-medium">{currentActivity.badge}</span>
+            <span>{currentActivity.time}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* =====================================================================
+          MIND-BLOWING ASYMMETRICAL HERO (EDITORIAL CREATOR FINANCIAL EXCHANGE)
+         ===================================================================== */}
+      <section id="top" className="relative pt-12 pb-20 sm:pt-20 sm:pb-28 border-b border-white/[0.08] ambient-glow overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+            
+            {/* Left 7 Columns: Editorial Typographic Command Center */}
+            <div className="lg:col-span-7 space-y-6 text-left">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#11131C] border border-white/[0.1] text-xs font-semibold text-slate-300 shadow-sm">
+                <span className="w-2 h-2 rounded-full bg-[#00F59B] live-dot"></span>
+                <span className="font-mono text-[11px] tracking-wide uppercase text-slate-300">Tunisia's 1st Content Bounty Protocol</span>
+                <span className="text-slate-600">•</span>
+                <span className="text-[#00F59B] font-mono text-[11px]">100% Escrow</span>
               </div>
 
-              <h1 className="text-3xl sm:text-5xl font-extrabold tracking-[-0.035em] text-[#09090B] leading-[1.08]">
-                Turn viral stream clips into{' '}
-                <span className="text-[#10B981]">real Dinars (DT).</span>
+              <h1 className="text-4xl sm:text-6xl xl:text-7xl font-black tracking-[-0.04em] text-white leading-[1.02]" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                Post Clips & UGC.{' '}
+                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-white via-[#00F59B] to-emerald-400">
+                  Cash Out Dinars.
+                </span>
               </h1>
 
-              <p className="text-base sm:text-lg text-[#52525B] leading-relaxed max-w-xl">
-                Tunisian streamers, podcasters, and brands fund verified TND bounty pools. Clippers (15–40) post short clips on TikTok, Reels & Shorts and get paid per 1,000 organic views—straight to{' '}
-                <span className="font-semibold text-[#09090B]">D17, Flouci, or CIB.</span>
+              <p className="text-base sm:text-lg text-slate-300 max-w-xl leading-relaxed">
+                Tunisian brands, SaaS apps, podcasts, and artists lock cash bounties in escrow. You turn their moments and products into viral TikToks & Reels. Every 1,000 verified views pays out straight to <strong className="text-white font-medium">D17, Flouci, or Bank RIB.</strong>
               </p>
 
-              {/* Key Trust Metrics */}
-              <div className="grid grid-cols-3 gap-4 pt-2 max-w-lg">
-                <div className="bg-white border border-[#E5E7EB] rounded-xl p-3.5">
-                  <div className="text-lg sm:text-xl font-bold text-[#10B981] tabular-nums">
-                    1.50–3.50 DT
+              {/* Mind-Blowing Interactive Earnings Visualizer */}
+              <div className="bg-[#0E1017] border border-white/[0.1] rounded-2xl p-5 space-y-4 shadow-xl">
+                <div className="flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-2">
+                    <Sliders className="w-4 h-4 text-[#00F59B]" />
+                    <span className="font-bold text-white uppercase tracking-wider text-[11px] font-mono">Interactive Payout Visualizer</span>
                   </div>
-                  <div className="text-[11px] font-medium text-[#52525B] mt-0.5">
-                    Avg. payout / 1K views
+                  <span className="text-[11px] font-mono text-slate-400">Rate: 3.00 DT / 1K views</span>
+                </div>
+
+                <div className="space-y-2">
+                  <input
+                    type="range"
+                    min={10000}
+                    max={200000}
+                    step={10000}
+                    value={heroViews}
+                    onChange={(e) => setHeroViews(Number(e.target.value))}
+                    className="w-full accent-[#00F59B] cursor-pointer h-2 bg-white/10 rounded-lg"
+                  />
+                  <div className="flex items-center justify-between font-mono text-[11px] text-slate-400">
+                    <span>10K views</span>
+                    <span className="text-[#00F59B] font-bold">{heroViews.toLocaleString()} monthly views</span>
+                    <span>200K views</span>
                   </div>
                 </div>
-                <div className="bg-white border border-[#E5E7EB] rounded-xl p-3.5">
-                  <div className="text-lg sm:text-xl font-bold text-[#09090B] tabular-nums">
-                    100% Escrow
+
+                <div className="grid grid-cols-3 gap-2 pt-2 border-t border-white/[0.06] text-center font-mono">
+                  <div className="bg-white/[0.02] p-2.5 rounded-xl border border-white/[0.04]">
+                    <span className="text-[10px] text-slate-500 uppercase block">Projected Cashout</span>
+                    <span className="text-lg sm:text-xl font-black text-[#00F59B] block mt-0.5">{simulatedHeroPayout} DT</span>
                   </div>
-                  <div className="text-[11px] font-medium text-[#52525B] mt-0.5">
-                    Funds locked before clipping
+                  <div className="bg-white/[0.02] p-2.5 rounded-xl border border-white/[0.04]">
+                    <span className="text-[10px] text-slate-500 uppercase block">Settlement Rail</span>
+                    <span className="text-xs sm:text-sm font-bold text-white block mt-1">D17 / Flouci</span>
                   </div>
-                </div>
-                <div className="bg-white border border-[#E5E7EB] rounded-xl p-3.5">
-                  <div className="text-lg sm:text-xl font-bold text-[#09090B] tabular-nums">
-                    D17 & Flouci
-                  </div>
-                  <div className="text-[11px] font-medium text-[#52525B] mt-0.5">
-                    Fast local TND cashouts
+                  <div className="bg-white/[0.02] p-2.5 rounded-xl border border-white/[0.04]">
+                    <span className="text-[10px] text-slate-500 uppercase block">Platform Fee</span>
+                    <span className="text-xs sm:text-sm font-bold text-white block mt-1">0.00 DT (0%)</span>
                   </div>
                 </div>
               </div>
 
-              {/* Supported Platforms Strip */}
-              <div className="flex flex-wrap items-center gap-3 pt-1 text-xs text-[#52525B]">
-                <span className="font-medium">Supported platforms:</span>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white border border-[#E5E7EB] font-medium text-[#09090B]">
-                  <TikTokIcon className="w-3.5 h-3.5" /> TikTok
-                </span>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white border border-[#E5E7EB] font-medium text-[#09090B]">
-                  <InstagramIcon className="w-3.5 h-3.5" /> Reels
-                </span>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white border border-[#E5E7EB] font-medium text-[#09090B]">
-                  <ShortsIcon className="w-3.5 h-3.5" /> Shorts
-                </span>
+              {/* CTAs */}
+              <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
+                <button
+                  onClick={() => {
+                    handleRoleSwitch('Creator');
+                    scrollToSection('waitlist-form');
+                  }}
+                  className="w-full sm:w-auto px-7 py-4 rounded-xl bg-[#00F59B] hover:bg-[#00D680] text-[#052014] font-black text-sm transition-all shadow-xl shadow-[#00F59B]/20 hover:scale-[1.02] flex items-center justify-center gap-2.5"
+                >
+                  <Award className="w-4 h-4" />
+                  <span>Claim Founding Creator Ticket</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => {
+                    handleRoleSwitch('Brand');
+                    scrollToSection('waitlist-form');
+                  }}
+                  className="w-full sm:w-auto px-6 py-4 rounded-xl bg-[#12141D] hover:bg-[#181B26] text-white font-bold text-sm border border-white/[0.1] transition-all flex items-center justify-center gap-2"
+                >
+                  <span>Launch a Brand Bounty Pool</span>
+                </button>
+              </div>
+
+              {/* 4 Technical Metrics Bar */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 font-mono text-left">
+                <div className="p-3 rounded-xl bg-[#0E1017] border border-white/[0.06]">
+                  <span className="text-[10px] text-slate-500 uppercase tracking-wider block">Founding Cap</span>
+                  <span className="text-lg font-black text-white mt-0.5 block">100 Spots</span>
+                  <span className="text-[10px] text-[#00F59B]">Cohort priority</span>
+                </div>
+                <div className="p-3 rounded-xl bg-[#0E1017] border border-white/[0.06]">
+                  <span className="text-[10px] text-slate-500 uppercase tracking-wider block">Pilot Pledges</span>
+                  <span className="text-lg font-black text-[#00F59B] mt-0.5 block">12,000 DT</span>
+                  <span className="text-[10px] text-slate-400">Target pools</span>
+                </div>
+                <div className="p-3 rounded-xl bg-[#0E1017] border border-white/[0.06]">
+                  <span className="text-[10px] text-slate-500 uppercase tracking-wider block">Lifetime Fee</span>
+                  <span className="text-lg font-black text-white mt-0.5 block">0% Fees</span>
+                  <span className="text-[10px] text-[#00F59B]">Early exemption</span>
+                </div>
+                <div className="p-3 rounded-xl bg-[#0E1017] border border-white/[0.06]">
+                  <span className="text-[10px] text-slate-500 uppercase tracking-wider block">Min Cashout</span>
+                  <span className="text-lg font-black text-white mt-0.5 block">10 DT</span>
+                  <span className="text-[10px] text-slate-400">Direct to D17</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Right 5 Columns: The Spatial 3D Klipi Escrow Vault Pass */}
+            <div className="lg:col-span-5 perspective-1000">
+              <div className="hologram-card rounded-3xl border border-white/15 p-7 shadow-2xl space-y-6 transition-transform duration-500 hover:rotate-0 transform lg:-rotate-1 lg:rotate-y-3">
+                
+                {/* Vault Pass Top Bar */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <KlipiLogoMark size="w-7 h-7" />
+                    <div>
+                      <span className="text-xs font-black tracking-wider text-white font-mono block">KLIPI ESCROW PROTOCOL</span>
+                      <span className="text-[10px] text-[#00F59B] font-mono">SERIES TN-2026</span>
+                    </div>
+                  </div>
+                  <div className="w-10 h-7 rounded-md bg-gradient-to-br from-amber-400/80 to-amber-600/40 border border-amber-300/40 flex items-center justify-center shadow-inner">
+                    <span className="w-4 h-3 border border-amber-200/60 rounded-sm"></span>
+                  </div>
+                </div>
+
+                {/* Vault Escrow Display */}
+                <div className="p-5 rounded-2xl bg-black/60 border border-white/[0.08] space-y-2">
+                  <div className="flex items-center justify-between text-xs font-mono">
+                    <span className="text-slate-400">Active Escrow Target</span>
+                    <span className="text-[#00F59B] font-bold flex items-center gap-1">
+                      <Lock className="w-3 h-3" /> VERIFIED
+                    </span>
+                  </div>
+                  <div className="text-3xl sm:text-4xl font-black text-white font-mono tracking-tight">
+                    12,000 <span className="text-[#00F59B] text-2xl">DT</span>
+                  </div>
+                  <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
+                    <div className="bg-[#00F59B] h-full rounded-full" style={{ width: '85%' }}></div>
+                  </div>
+                </div>
+
+                {/* Live Settlement Telemetry */}
+                <div className="space-y-2.5 font-mono text-xs">
+                  <span className="text-[10px] uppercase tracking-wider text-slate-400 font-bold block">Tunisian Settlement Rails</span>
+                  
+                  <div className="p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06] flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-[#00F59B] live-dot"></span>
+                      <span className="text-white text-xs font-semibold">D17 (La Poste)</span>
+                    </div>
+                    <span className="text-[11px] text-[#00F59B] font-bold">INSTANT SETTLE</span>
+                  </div>
+
+                  <div className="p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06] flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-[#38BDF8] live-dot"></span>
+                      <span className="text-white text-xs font-semibold">Flouci Mobile Wallet</span>
+                    </div>
+                    <span className="text-[11px] text-[#38BDF8] font-bold">0.00 DT FEE</span>
+                  </div>
+
+                  <div className="p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06] flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-amber-400"></span>
+                      <span className="text-white text-xs font-semibold">20-Digit Bank RIB</span>
+                    </div>
+                    <span className="text-[11px] text-amber-300 font-bold">BIAT / ATTIJARI</span>
+                  </div>
+                </div>
+
+                {/* Security Stamping Footer */}
+                <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between text-[10px] text-slate-500 font-mono">
+                  <span>SECURED BY 48H ANTI-BOT AUDIT</span>
+                  <span className="text-slate-400">TUNIS, TN</span>
+                </div>
               </div>
             </div>
 
-            {/* Right 6 Cols: Interactive Hero Waitlist Card */}
-            <div id="waitlist-form" className="lg:col-span-6">
-              <div className="bg-white border border-[#E5E7EB] rounded-2xl p-6 sm:p-7 shadow-sm">
-                {submittedEntry ? (
-                  /* --- VIP EARLY ACCESS PASS (POST-SUBMIT STATE) --- */
-                  <div className="space-y-5">
-                    <div className="flex items-start justify-between gap-3 pb-4 border-b border-[#E5E7EB]">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-10 h-10 rounded-xl bg-[#ECFDF5] border border-emerald-200 flex items-center justify-center text-[#10B981]">
-                          <CheckCircle2 className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <span className="text-[11px] font-bold uppercase tracking-wider text-[#10B981]">
-                            Founding Access Reserved
-                          </span>
-                          <h3 className="text-base font-bold text-[#09090B]">
-                            You’re on the Klipi.tn Waitlist!
-                          </h3>
-                        </div>
-                      </div>
-                      <span className="px-2.5 py-1 rounded-md bg-[#09090B] text-white text-xs font-bold tabular-nums">
-                        Queue #{submittedEntry.position}
-                      </span>
-                    </div>
-
-                    {/* Digital Founding Member Card */}
-                    <div className="rounded-xl bg-[#09090B] text-white p-5 space-y-4 relative overflow-hidden">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <KlipiLogoMark size="w-6 h-6" />
-                          <span className="text-sm font-bold tracking-tight">
-                            klipi<span className="text-[#10B981]">.tn</span> Founding Pass
-                          </span>
-                        </div>
-                        <span className="text-[11px] font-semibold px-2 py-0.5 rounded bg-white/10 text-emerald-300">
-                          {submittedEntry.role}
-                        </span>
-                      </div>
-
-                      <div>
-                        <div className="text-xs text-zinc-400">Member</div>
-                        <div className="text-base font-bold">{submittedEntry.name}</div>
-                        <div className="text-xs text-zinc-400 mt-0.5">
-                          {submittedEntry.platform} • {submittedEntry.detail}
-                        </div>
-                      </div>
-
-                      <div className="pt-3 border-t border-white/10 flex items-center justify-between gap-2">
-                        <div>
-                          <div className="text-[10px] uppercase tracking-wider text-zinc-400">
-                            Unlocked Early Bird Deal
-                          </div>
-                          <div className="text-xs font-bold text-[#10B981]">
-                            {submittedEntry.perk}
-                          </div>
-                        </div>
-                        <span className="text-[11px] font-mono text-zinc-400">
-                          {submittedEntry.refCode}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Referral Jump-the-Queue Box */}
-                    <div className="bg-[#F9FAFB] border border-[#E5E7EB] rounded-xl p-4 space-y-2.5">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-semibold text-[#09090B]">
-                          Jump +15 spots in the queue
-                        </span>
-                        <span className="text-[11px] text-[#52525B]">
-                          Share with Tunisian creators
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="text"
-                          readOnly
-                          value={`https://klipi.tn/?ref=${submittedEntry.refCode}`}
-                          className="w-full h-9 px-3 bg-white border border-[#E5E7EB] rounded-lg text-xs font-mono text-[#52525B]"
-                        />
-                        <button
-                          type="button"
-                          onClick={handleCopyReferral}
-                          className="h-9 px-3.5 rounded-lg bg-[#09090B] hover:bg-zinc-800 text-white text-xs font-semibold inline-flex items-center gap-1.5 shrink-0 transition-colors"
-                        >
-                          {copiedRef ? (
-                            <>
-                              <Check className="w-3.5 h-3.5 text-[#10B981]" />
-                              <span>Copied</span>
-                            </>
-                          ) : (
-                            <>
-                              <Copy className="w-3.5 h-3.5" />
-                              <span>Copy</span>
-                            </>
-                          )}
-                        </button>
-                      </div>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSubmittedEntry(null);
-                        setFullName('');
-                        setContact('');
-                      }}
-                      className="text-xs font-medium text-[#52525B] hover:text-[#09090B] underline"
-                    >
-                      Register another account or teammate
-                    </button>
-                  </div>
-                ) : (
-                  /* --- WAITLIST REGISTRATION FORM --- */
-                  <form onSubmit={handleWaitlistSubmit} className="space-y-4">
-                    <div className="space-y-1">
-                      <div className="flex items-center justify-between">
-                        <h2 className="text-lg font-bold text-[#09090B]">
-                          Request Early Access
-                        </h2>
-                        <span className="text-[11px] font-semibold text-[#10B981] bg-[#ECFDF5] border border-emerald-200 px-2 py-0.5 rounded-full">
-                          Founding Perks Active
-                        </span>
-                      </div>
-                      <p className="text-xs text-[#52525B]">
-                        Lock in launch discounts & priority onboarding before public release.
-                      </p>
-                    </div>
-
-                    {/* Role Segmented Toggle */}
-                    <div className="grid grid-cols-2 gap-1.5 p-1 rounded-xl bg-[#F9FAFB] border border-[#E5E7EB]">
-                      <button
-                        type="button"
-                        onClick={() => handleRoleSwitch('Clipper')}
-                        className={`py-2 px-3 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
-                          role === 'Clipper'
-                            ? 'bg-[#09090B] text-white shadow-2xs'
-                            : 'text-[#52525B] hover:text-[#09090B]'
-                        }`}
-                      >
-                        <Scissors className="w-3.5 h-3.5" />
-                        <span>I’m a Clipper (Earn DT)</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleRoleSwitch('Streamer / Brand')}
-                        className={`py-2 px-3 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
-                          role === 'Streamer / Brand'
-                            ? 'bg-[#09090B] text-white shadow-2xs'
-                            : 'text-[#52525B] hover:text-[#09090B]'
-                        }`}
-                      >
-                        <TrendingUp className="w-3.5 h-3.5" />
-                        <span>Streamer / Brand</span>
-                      </button>
-                    </div>
-
-                    {/* Dynamic Founding Deal Callout */}
-                    <div className="flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg bg-[#ECFDF5]/80 border border-emerald-200/80 text-xs">
-                      <span className="font-semibold text-[#065F46]">
-                        {role === 'Clipper'
-                          ? '🎁 Perk: +15% Bonus CPM on your first 3 clips'
-                          : '🎁 Perk: 0% Platform Fee for your first 30 days'}
-                      </span>
-                      <span className="text-[11px] font-bold text-[#10B981] tabular-nums shrink-0">
-                        {role === 'Clipper'
-                          ? `${clipperSpotsLeft} spots left`
-                          : `${streamerSpotsLeft} spots left`}
-                      </span>
-                    </div>
-
-                    {/* Inputs */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-xs font-semibold text-[#09090B] mb-1">
-                          {role === 'Clipper' ? 'Name or TikTok/IG Handle' : 'Creator or Brand Name'}
-                        </label>
-                        <input
-                          type="text"
-                          required
-                          value={fullName}
-                          onChange={(e) => setFullName(e.target.value)}
-                          placeholder={
-                            role === 'Clipper' ? 'e.g. Ala (@ala.clips)' : 'e.g. Rayen Gaming'
-                          }
-                          className="w-full h-10 px-3 bg-white border border-[#E5E7EB] rounded-lg text-xs text-[#09090B] placeholder-[#52525B]/60 focus:outline-none focus:border-[#09090B]"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-semibold text-[#09090B] mb-1">
-                          WhatsApp (+216) or Email
-                        </label>
-                        <input
-                          type="text"
-                          required
-                          value={contact}
-                          onChange={(e) => setContact(e.target.value)}
-                          placeholder="e.g. 22 345 678 or name@mail.com"
-                          className="w-full h-10 px-3 bg-white border border-[#E5E7EB] rounded-lg text-xs text-[#09090B] placeholder-[#52525B]/60 focus:outline-none focus:border-[#09090B]"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-xs font-semibold text-[#09090B] mb-1">
-                          {role === 'Clipper' ? 'Main Clipping Platform' : 'Main Stream / Content Channel'}
-                        </label>
-                        <select
-                          value={platform}
-                          onChange={(e) => setPlatform(e.target.value)}
-                          className="w-full h-10 px-3 bg-white border border-[#E5E7EB] rounded-lg text-xs font-medium text-[#09090B] focus:outline-none focus:border-[#09090B]"
-                        >
-                          {role === 'Clipper' ? (
-                            <>
-                              <option value="TikTok">TikTok</option>
-                              <option value="Instagram Reels">Instagram Reels</option>
-                              <option value="YouTube Shorts">YouTube Shorts</option>
-                            </>
-                          ) : (
-                            <>
-                              <option value="Kick">Kick</option>
-                              <option value="Twitch">Twitch</option>
-                              <option value="YouTube">YouTube / Podcast</option>
-                              <option value="TikTok / Brand">TikTok / Brand Campaign</option>
-                            </>
-                          )}
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-semibold text-[#09090B] mb-1">
-                          {role === 'Clipper'
-                            ? 'Preferred TND Cashout'
-                            : 'Est. Monthly Bounty Budget'}
-                        </label>
-                        <select
-                          value={detailField}
-                          onChange={(e) => setDetailField(e.target.value)}
-                          className="w-full h-10 px-3 bg-white border border-[#E5E7EB] rounded-lg text-xs font-medium text-[#09090B] focus:outline-none focus:border-[#09090B]"
-                        >
-                          {role === 'Clipper' ? (
-                            <>
-                              <option value="D17 (La Poste)">D17 (La Poste)</option>
-                              <option value="Flouci Wallet">Flouci Wallet</option>
-                              <option value="CIB / Bank RIB">CIB / Bank RIB</option>
-                              <option value="Telecom Recharge">Telecom Recharge (Ooredoo/Orange/TT)</option>
-                            </>
-                          ) : (
-                            <>
-                              <option value="200 – 500 DT / mo">200 – 500 DT / mo</option>
-                              <option value="500 – 1,500 DT / mo">500 – 1,500 DT / mo</option>
-                              <option value="1,500 – 3,000 DT / mo">1,500 – 3,000 DT / mo</option>
-                              <option value="3,000+ DT / mo">3,000+ DT / mo</option>
-                            </>
-                          )}
-                        </select>
-                      </div>
-                    </div>
-
-                    <button
-                      type="submit"
-                      className="w-full h-11 rounded-lg bg-[#09090B] hover:bg-zinc-800 text-white text-xs font-semibold transition-colors flex items-center justify-center gap-2 shadow-2xs"
-                    >
-                      <span>
-                        {role === 'Clipper'
-                          ? 'Claim Founding Clipper Spot'
-                          : 'Claim 0% Fee Streamer / Brand Access'}
-                      </span>
-                      <ArrowRight className="w-4 h-4" />
-                    </button>
-
-                    <p className="text-[11px] text-center text-[#52525B]">
-                      No spam. We’ll message you on WhatsApp or email when your invite wave opens.
-                    </p>
-                  </form>
-                )}
-              </div>
-            </div>
           </div>
         </div>
       </section>
 
       {/* =====================================================================
-          INTERACTIVE PROTOTYPE SCREENSHOTS / LIVE UI SHOWCASE
+          UPCOMING BOUNTIES CONSOLE (CONTENT REWARDS MULTI-CATEGORY)
          ===================================================================== */}
-      <section id="preview" className="py-16 sm:py-24 border-b border-[#E5E7EB]">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-8">
-          <div className="max-w-2xl space-y-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#10B981]">
-              Interactive Product Preview
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-[-0.03em] text-[#09090B]">
-              Inside the Klipi.tn Web App
-            </h2>
-            <p className="text-sm text-[#52525B]">
-              Click through the three core screens of our working prototype—built for speed, transparent TND escrow, and automated bot protection.
-            </p>
+      <section id="pilot-bounties" className="py-16 sm:py-24 border-b border-white/[0.08]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+            <div className="space-y-2 text-left">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#00F59B]/10 border border-[#00F59B]/25 text-[#00F59B] text-xs font-mono font-bold uppercase tracking-wider">
+                <Sparkles className="w-3.5 h-3.5" />
+                Live Campaign Feed
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                Upcoming Pilot Bounties for Launch Day
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-400 max-w-xl">
+                Explore launch campaigns across fintech apps, podcasts, food delivery, trending audio sounds, and streams.
+              </p>
+            </div>
+
+            <div className="relative w-full md:w-72">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search brand, app, sound..."
+                className="w-full bg-[#11131C] border border-white/[0.1] rounded-xl pl-10 pr-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#00F59B] font-mono transition"
+              />
+            </div>
           </div>
 
-          {/* 3 Crisp Showcase Tabs */}
-          <div className="flex flex-wrap items-center gap-2">
-            {[
-              { id: 'marketplace', label: '1. Clipper Bounty Marketplace' },
-              { id: 'fraud', label: '2. Streamer Escrow & AI Fraud Shield' },
-              { id: 'wallet', label: '3. Instant TND Wallet & Cashout' }
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setPreviewTab(tab.id)}
-                className={`px-4 py-2 rounded-lg text-xs font-semibold border transition-all ${
-                  previewTab === tab.id
-                    ? 'bg-[#09090B] text-white border-[#09090B]'
-                    : 'bg-white text-[#52525B] border-[#E5E7EB] hover:text-[#09090B]'
-                }`}
+          {/* Tactical Filter Console Tabs */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-8 scrollbar-none">
+            {categories.map((cat) => {
+              const IconComponent = cat.icon;
+              const isActive = selectedCat === cat.name;
+              return (
+                <button
+                  key={cat.name}
+                  onClick={() => setSelectedCat(cat.name)}
+                  className={`px-4 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all duration-200 flex items-center gap-2 border ${
+                    isActive
+                      ? 'bg-white text-black border-white shadow-lg'
+                      : 'bg-[#11131C] border-white/[0.08] text-slate-400 hover:text-white hover:border-white/20'
+                  }`}
+                >
+                  <IconComponent className="w-3.5 h-3.5" />
+                  <span>{cat.name}</span>
+                  <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded ${
+                    isActive ? 'bg-black/10 text-black font-black' : 'bg-white/10 text-slate-400'
+                  }`}>
+                    {cat.count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Ticket-Style Bounty Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredBounties.map((bounty) => (
+              <div
+                key={bounty.id}
+                onClick={() => {
+                  setSelectedBounty(bounty);
+                  setEstimatedViews(25000);
+                }}
+                className="group relative bg-[#0E1017] border border-white/[0.08] hover:border-[#00F59B]/40 rounded-3xl overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl flex flex-col justify-between"
               >
-                {tab.label}
-              </button>
+                <div>
+                  {/* Category Image Canvas */}
+                  <div className="relative h-44 sm:h-48 overflow-hidden border-b border-white/[0.08]">
+                    <img
+                      src={bounty.coverImage}
+                      alt={bounty.title}
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0E1017] via-[#0E1017]/60 to-black/40" />
+
+                    <div className="relative z-10 h-full p-4 flex flex-col justify-between">
+                      <div className="flex items-center justify-between">
+                        <span className={`text-[10px] font-bold px-2.5 py-1 rounded-lg border backdrop-blur-md shadow-md ${bounty.tagBg}`}>
+                          {bounty.bountyType}
+                        </span>
+
+                        <span className="bg-[#08090E]/90 backdrop-blur-md border border-[#00F59B]/40 text-[#00F59B] text-xs font-black px-3 py-1 rounded-xl font-mono shadow-xl">
+                          {bounty.cpmTnd.toFixed(2)} DT / 1K
+                        </span>
+                      </div>
+
+                      <div className="flex items-end justify-between">
+                        <span className="text-[11px] font-semibold text-white drop-shadow flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#00F59B]"></span>
+                          {bounty.audience}
+                        </span>
+                        
+                        {/* Audio Waveform Indicator for Music Bounties */}
+                        {bounty.category === 'Music & Sounds' ? (
+                          <div className="flex items-center gap-1 bg-black/70 backdrop-blur-md px-2 py-1 rounded-lg border border-amber-400/30">
+                            <span className="w-1 h-3 bg-amber-400 rounded-full eq-bar-1"></span>
+                            <span className="w-1 h-4 bg-amber-400 rounded-full eq-bar-2"></span>
+                            <span className="w-1 h-2 bg-amber-400 rounded-full eq-bar-3"></span>
+                            <span className="w-1 h-3.5 bg-amber-400 rounded-full eq-bar-4"></span>
+                            <span className="text-[10px] font-mono text-amber-300 ml-1">OFFICIAL SOUND</span>
+                          </div>
+                        ) : (
+                          <span className="text-[10px] bg-black/70 backdrop-blur-md text-slate-200 border border-white/10 px-2 py-0.5 rounded font-mono">
+                            Cap: {bounty.maxPerClipTnd} DT
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Card Content Area */}
+                  <div className="p-5 space-y-3.5 text-left">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-10 h-10 rounded-xl border flex items-center justify-center font-bold text-xs shrink-0 ${bounty.avatarBg}`}>
+                        {bounty.initials}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-sm font-bold text-white truncate group-hover:text-[#00F59B] transition">
+                            {bounty.creator}
+                          </span>
+                          <CheckCircle2 className="w-3.5 h-3.5 text-[#00F59B] shrink-0" />
+                        </div>
+                        <span className="text-xs text-slate-400 font-mono block truncate">
+                          {bounty.handle} • {bounty.category}
+                        </span>
+                      </div>
+                    </div>
+
+                    <h3 className="text-sm font-semibold text-slate-100 leading-snug line-clamp-2">
+                      {bounty.title}
+                    </h3>
+
+                    <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                      {bounty.platforms.map((p) => (
+                        <span
+                          key={p}
+                          className="text-[10px] font-semibold bg-white/[0.04] border border-white/[0.08] text-slate-300 px-2 py-0.5 rounded"
+                        >
+                          {p}
+                        </span>
+                      ))}
+                      <span className="text-[10px] text-slate-400 ml-auto font-mono">
+                        Min {bounty.minViews.toLocaleString()} views
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Target Escrow Pool Gauge Footer */}
+                <div className="p-5 pt-3.5 border-t border-white/[0.06] bg-[#0A0C12] space-y-2">
+                  <div className="flex items-center justify-between text-xs font-mono">
+                    <span className="font-semibold text-slate-300 text-[11px]">
+                      Planned Pool:{' '}
+                      <span className="font-bold text-white">
+                        {bounty.targetPoolTnd.toLocaleString()} DT
+                      </span>
+                    </span>
+                    <span className="font-bold text-[#00F59B] text-[11px]">{bounty.statusBadge}</span>
+                  </div>
+                  <div className="w-full h-1.5 bg-white/[0.08] rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-[#00F59B] to-emerald-400 rounded-full"
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
 
-          {/* High-Resolution Browser Frame Mockup */}
-          <div className="bg-white border border-[#E5E7EB] rounded-2xl shadow-sm overflow-hidden">
-            {/* Browser Top Chrome */}
-            <div className="h-11 px-4 bg-[#F9FAFB] border-b border-[#E5E7EB] flex items-center justify-between gap-4">
-              <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-zinc-300" />
-                <span className="w-2.5 h-2.5 rounded-full bg-zinc-300" />
-                <span className="w-2.5 h-2.5 rounded-full bg-zinc-300" />
-              </div>
-              <div className="px-3 py-1 rounded-md bg-white border border-[#E5E7EB] text-[11px] font-mono text-[#52525B] flex items-center gap-1.5">
-                <Lock className="w-3 h-3 text-[#10B981]" />
-                <span>
-                  https://app.klipi.tn/
-                  {previewTab === 'marketplace'
-                    ? 'discover'
-                    : previewTab === 'fraud'
-                    ? 'studio/reviews'
-                    : 'wallet'}
-                </span>
-              </div>
-              <span className="text-[11px] font-medium text-[#52525B] hidden sm:inline">
-                Interactive Preview
-              </span>
-            </div>
-
-            {/* Simulated App Top Bar */}
-            <div className="h-12 px-5 bg-white border-b border-[#E5E7EB] flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <KlipiLogoMark size="w-6 h-6" />
-                <span className="text-sm font-extrabold tracking-tight text-[#09090B]">
-                  klipi<span className="text-[#10B981]">.tn</span>
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="px-2.5 py-1 rounded-md bg-[#ECFDF5] border border-emerald-200 text-[11px] font-bold text-[#10B981] tabular-nums">
-                  142.50 DT Available
-                </span>
-              </div>
-            </div>
-
-            {/* TAB 1: CLIPPER BOUNTY MARKETPLACE SCREENSHOT */}
-            {previewTab === 'marketplace' && (
-              <div className="p-5 sm:p-7 bg-[#F9FAFB] space-y-5">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <div>
-                    <h3 className="text-sm font-bold text-[#09090B]">
-                      Active Tunisian Bounties (Click any card to inspect)
-                    </h3>
-                    <p className="text-xs text-[#52525B]">
-                      Escrow verified • Auto-tracking views every 15 minutes
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-xs">
-                    <span className="px-2.5 py-1 rounded-md bg-[#09090B] text-white font-medium">
-                      All Categories
-                    </span>
-                    <span className="px-2.5 py-1 rounded-md bg-white border border-[#E5E7EB] text-[#52525B]">
-                      Gaming & Kick
-                    </span>
-                    <span className="px-2.5 py-1 rounded-md bg-white border border-[#E5E7EB] text-[#52525B] hidden sm:inline">
-                      Apps & Brands
-                    </span>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {mockBounties.map((b, idx) => {
-                    const isSelected = selectedMockBounty === idx;
-                    return (
-                      <div
-                        key={b.creator}
-                        onClick={() => setSelectedMockBounty(idx)}
-                        className={`bg-white rounded-xl p-4 border transition-all cursor-pointer flex flex-col justify-between space-y-4 ${
-                          isSelected
-                            ? 'border-[#09090B] ring-1 ring-[#09090B]'
-                            : 'border-[#E5E7EB] hover:border-zinc-300'
-                        }`}
-                      >
-                        <div className="space-y-3">
-                          <div className="flex items-start justify-between gap-2">
-                            <div>
-                              <div className="flex items-center gap-1">
-                                <span className="text-xs font-bold text-[#09090B]">
-                                  {b.creator}
-                                </span>
-                                <CheckCircle2 className="w-3.5 h-3.5 text-[#10B981]" />
-                              </div>
-                              <span className="text-[11px] text-[#52525B]">{b.category}</span>
-                            </div>
-                            <span className="px-2 py-0.5 rounded bg-[#ECFDF5] border border-emerald-200 text-[11px] font-bold text-[#10B981] tabular-nums">
-                              {b.cpm} / 1K
-                            </span>
-                          </div>
-
-                          <p className="text-xs font-medium text-[#09090B] leading-snug">
-                            {b.title}
-                          </p>
-
-                          <div className="px-2.5 py-1.5 rounded-lg bg-[#F9FAFB] border border-[#E5E7EB] text-[11px] text-[#52525B] flex items-center gap-1.5">
-                            <Zap className="w-3 h-3 text-[#10B981] shrink-0" />
-                            <span className="truncate">{b.spike}</span>
-                          </div>
-                        </div>
-
-                        <div className="space-y-1.5 pt-2 border-t border-[#E5E7EB]">
-                          <div className="flex justify-between text-[11px] tabular-nums">
-                            <span className="font-semibold text-[#09090B]">
-                              {b.remaining}{' '}
-                              <span className="font-normal text-[#52525B]">/ {b.total}</span>
-                            </span>
-                            <span className="text-[#52525B]">{b.pct}% left</span>
-                          </div>
-                          <div className="w-full h-1.5 bg-zinc-100 rounded-full overflow-hidden">
-                            <div
-                              className="h-full bg-[#10B981] rounded-full"
-                              style={{ width: `${b.pct}%` }}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            {/* TAB 2: STREAMER ESCROW & AI FRAUD SHIELD SCREENSHOT */}
-            {previewTab === 'fraud' && (
-              <div className="p-5 sm:p-7 bg-[#F9FAFB] space-y-5">
-                {/* Top KPI Mini-Row */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  <div className="bg-white border border-[#E5E7EB] rounded-xl p-3.5">
-                    <div className="text-[11px] text-[#52525B]">Active Escrow</div>
-                    <div className="text-lg font-bold text-[#09090B] tabular-nums mt-0.5">
-                      1,420.00 DT
-                    </div>
-                  </div>
-                  <div className="bg-white border border-[#E5E7EB] rounded-xl p-3.5">
-                    <div className="text-[11px] text-[#52525B]">Verified Organic Views</div>
-                    <div className="text-lg font-bold text-[#09090B] tabular-nums mt-0.5">
-                      163,700
-                    </div>
-                  </div>
-                  <div className="bg-white border border-[#E5E7EB] rounded-xl p-3.5">
-                    <div className="text-[11px] text-[#52525B]">Fraud Blocked</div>
-                    <div className="text-lg font-bold text-[#10B981] tabular-nums mt-0.5">
-                      155.00 DT
-                    </div>
-                  </div>
-                  <div className="bg-white border border-[#E5E7EB] rounded-xl p-3.5">
-                    <div className="text-[11px] text-[#52525B]">Avg. Cost / 1K Views</div>
-                    <div className="text-lg font-bold text-[#09090B] tabular-nums mt-0.5">
-                      2.35 DT
-                    </div>
-                  </div>
-                </div>
-
-                {/* Interactive Review Table */}
-                <div className="bg-white border border-[#E5E7EB] rounded-xl overflow-hidden">
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse text-xs">
-                      <thead>
-                        <tr className="border-b border-[#E5E7EB] bg-[#F9FAFB] text-[11px] font-semibold text-[#52525B]">
-                          <th className="py-2.5 px-4">Clipper</th>
-                          <th className="py-2.5 px-4">Views</th>
-                          <th className="py-2.5 px-4">Payout</th>
-                          <th className="py-2.5 px-4">AI Fraud Score</th>
-                          <th className="py-2.5 px-4 text-right">Interactive Action</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-[#E5E7EB]">
-                        <tr>
-                          <td className="py-3 px-4 font-semibold text-[#09090B]">
-                            @yassine.clips <span className="text-[#52525B] font-normal">• TikTok</span>
-                          </td>
-                          <td className="py-3 px-4 tabular-nums font-medium">34,200</td>
-                          <td className="py-3 px-4 tabular-nums font-bold text-[#10B981]">
-                            85.50 DT
-                          </td>
-                          <td className="py-3 px-4">
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-[#ECFDF5] text-[#10B981] border border-emerald-200">
-                              <ShieldCheck className="w-3 h-3" /> Organic 98/100
-                            </span>
-                          </td>
-                          <td className="py-3 px-4 text-right">
-                            {mockReviewState.sub1 === 'Pending' ? (
-                              <button
-                                onClick={() =>
-                                  setMockReviewState((s) => ({ ...s, sub1: 'Approved' }))
-                                }
-                                className="px-2.5 py-1 rounded-md bg-[#09090B] text-white text-[11px] font-semibold hover:bg-zinc-800"
-                              >
-                                Approve & Release DT
-                              </button>
-                            ) : (
-                              <span className="text-[11px] font-bold text-[#10B981]">
-                                ✓ Paid from Escrow
-                              </span>
-                            )}
-                          </td>
-                        </tr>
-
-                        <tr>
-                          <td className="py-3 px-4 font-semibold text-[#09090B]">
-                            @botfarm_99 <span className="text-[#52525B] font-normal">• TikTok</span>
-                          </td>
-                          <td className="py-3 px-4 tabular-nums font-medium">62,000</td>
-                          <td className="py-3 px-4 tabular-nums font-bold text-[#52525B] line-through">
-                            155.00 DT
-                          </td>
-                          <td className="py-3 px-4">
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-amber-50 text-amber-700 border border-amber-200">
-                              <AlertCircle className="w-3 h-3" /> Bot Spike 18/100
-                            </span>
-                          </td>
-                          <td className="py-3 px-4 text-right">
-                            {mockReviewState.sub2 === 'Flagged' ? (
-                              <button
-                                onClick={() =>
-                                  setMockReviewState((s) => ({ ...s, sub2: 'Blocked' }))
-                                }
-                                className="px-2.5 py-1 rounded-md bg-white border border-[#E5E7EB] text-red-600 text-[11px] font-semibold hover:bg-red-50"
-                              >
-                                Reject & Keep Escrow
-                              </button>
-                            ) : (
-                              <span className="text-[11px] font-semibold text-[#52525B]">
-                                Blocked • 155 DT Saved
-                              </span>
-                            )}
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* TAB 3: INSTANT TND WALLET & CASHOUT SCREENSHOT */}
-            {previewTab === 'wallet' && (
-              <div className="p-5 sm:p-7 bg-[#F9FAFB]">
-                <div className="max-w-xl mx-auto bg-white border border-[#E5E7EB] rounded-xl p-5 space-y-4">
-                  <div className="flex items-center justify-between pb-3 border-b border-[#E5E7EB]">
-                    <div>
-                      <span className="text-xs text-[#52525B]">Available Clipper Balance</span>
-                      <div className="text-2xl font-extrabold text-[#10B981] tabular-nums">
-                        142.50 DT
-                      </div>
-                    </div>
-                    <span className="px-2.5 py-1 rounded-md bg-[#F9FAFB] border border-[#E5E7EB] text-[11px] font-medium text-[#52525B]">
-                      Min withdrawal: 10.00 DT
-                    </span>
-                  </div>
-
-                  <div className="space-y-2">
-                    <span className="text-xs font-semibold text-[#09090B]">
-                      Choose Local Payout Rail (Click to preview)
-                    </span>
-                    <div className="grid grid-cols-2 gap-2.5">
-                      {[
-                        { id: 'D17', name: 'D17 (La Poste)', fee: '0.50 DT fee • Same day' },
-                        { id: 'Flouci', name: 'Flouci Wallet', fee: '0.00 DT fee • Instant' },
-                        { id: 'CIB', name: 'Bank Transfer (RIB/CIB)', fee: '1.00 DT fee • 24h' },
-                        { id: 'Telecom', name: 'Mobile Top-Up', fee: 'Ooredoo / Orange / TT' }
-                      ].map((rail) => (
-                        <button
-                          key={rail.id}
-                          type="button"
-                          onClick={() => setSelectedRail(rail.id)}
-                          className={`p-3 rounded-lg border text-left transition-all ${
-                            selectedRail === rail.id
-                              ? 'border-[#09090B] bg-[#F9FAFB]'
-                              : 'border-[#E5E7EB] bg-white hover:bg-[#F9FAFB]'
-                          }`}
-                        >
-                          <div className="text-xs font-bold text-[#09090B]">{rail.name}</div>
-                          <div className="text-[11px] text-[#52525B] mt-0.5">{rail.fee}</div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="p-3 rounded-lg bg-[#ECFDF5]/70 border border-emerald-200 flex items-center justify-between text-xs">
-                    <span className="text-[#065F46] font-medium">
-                      Selected rail: <strong>{selectedRail}</strong>
-                    </span>
-                    <span className="font-bold text-[#10B981] tabular-nums">
-                      Net payout: {selectedRail === 'Flouci' || selectedRail === 'Telecom' ? '142.50 DT' : selectedRail === 'D17' ? '142.00 DT' : '141.50 DT'}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
         </div>
       </section>
 
       {/* =====================================================================
-          HOW KLIPI WORKS (3-STEP FLOW TOGGLE)
+          FOUNDING WAITLIST & PLEDGES LEDGER
          ===================================================================== */}
-      <section id="how-it-works" className="py-16 sm:py-24 border-b border-[#E5E7EB]">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-10">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-            <div className="space-y-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-[#10B981]">
-                Simple Workflow
+      <section id="roster" className="py-16 sm:py-24 border-b border-white/[0.08] bg-[#0A0C12]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 text-left">
+            <div>
+              <span className="text-xs font-bold uppercase tracking-wider text-[#00F59B] bg-[#00F59B]/10 border border-[#00F59B]/25 px-3 py-1 rounded-full font-mono">
+                Founding Member Registry
               </span>
-              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-[-0.03em] text-[#09090B]">
-                How Klipi Works
+              <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight mt-2" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                Live Pledges & Waitlist Commitments
               </h2>
+              <p className="text-xs sm:text-sm text-slate-400 mt-0.5">
+                Tunisian creators, brands, and video editors securing priority allocation for private beta launch.
+              </p>
             </div>
-
-            {/* Audience Switcher */}
-            <div className="inline-flex p-1 rounded-xl bg-white border border-[#E5E7EB] self-start">
-              <button
-                onClick={() => setHowRole('Clipper')}
-                className={`px-4 py-2 rounded-lg text-xs font-semibold transition-colors ${
-                  howRole === 'Clipper'
-                    ? 'bg-[#09090B] text-white'
-                    : 'text-[#52525B] hover:text-[#09090B]'
-                }`}
-              >
-                For Clippers (15–40)
-              </button>
-              <button
-                onClick={() => setHowRole('Streamer')}
-                className={`px-4 py-2 rounded-lg text-xs font-semibold transition-colors ${
-                  howRole === 'Streamer'
-                    ? 'bg-[#09090B] text-white'
-                    : 'text-[#52525B] hover:text-[#09090B]'
-                }`}
-              >
-                For Streamers & Brands
-              </button>
+            <div className="flex items-center gap-2 text-xs text-[#00F59B] font-mono bg-[#00F59B]/10 border border-[#00F59B]/25 px-4 py-2 rounded-xl">
+              <Users className="w-4 h-4" />
+              <span className="font-bold">49 / 100 Founding Spots Reserved</span>
             </div>
           </div>
 
-          {howRole === 'Clipper' ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {[
-                {
-                  step: '01',
-                  title: 'Pick a funded TND bounty',
-                  desc: 'Browse active campaigns from Tunisian streamers, podcasts, and apps. Check the rate per 1,000 views, minimum view threshold, and grab Hot VOD timestamps.'
-                },
-                {
-                  step: '02',
-                  title: 'Edit & post on TikTok, Reels or Shorts',
-                  desc: 'Cut the funniest or highest-retention 30–60s moment, add clean captions, tag the creator’s required handle, and paste your published link into Klipi.'
-                },
-                {
-                  step: '03',
-                  title: 'Get verified & cash out in Dinars',
-                  desc: 'Our engine tracks your organic view growth automatically. Once verified, withdraw your TND balance straight to D17, Flouci, or CIB.'
-                }
-              ].map((item) => (
-                <div
-                  key={item.step}
-                  className="bg-white border border-[#E5E7EB] rounded-2xl p-6 space-y-3"
-                >
-                  <span className="inline-block text-xs font-mono font-bold text-[#10B981] bg-[#ECFDF5] border border-emerald-200 px-2.5 py-1 rounded-md">
-                    Step {item.step}
-                  </span>
-                  <h3 className="text-base font-bold text-[#09090B]">{item.title}</h3>
-                  <p className="text-xs text-[#52525B] leading-relaxed">{item.desc}</p>
+          <div className="bg-[#0E1017] border border-white/[0.08] rounded-3xl overflow-hidden shadow-xl">
+            <div className="divide-y divide-white/[0.05]">
+              {RECENT_RESERVATIONS.map((item) => (
+                <div key={item.id} className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-white/[0.02] transition text-left">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2.5">
+                      <span className="text-sm font-bold text-white font-mono">{item.handle}</span>
+                      <span className="text-[10px] bg-[#00F59B]/10 border border-[#00F59B]/25 text-[#00F59B] px-2 py-0.5 rounded font-mono font-bold">{item.role}</span>
+                      <span className="text-xs text-slate-400">• {item.focus}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-6 justify-between sm:justify-end font-mono">
+                    <div className="text-right">
+                      <span className="text-xs text-slate-300 font-medium block">{item.channel}</span>
+                      <span className="text-[10px] text-slate-500 uppercase">Rail / Pledge</span>
+                    </div>
+
+                    <div className="text-right min-w-[95px]">
+                      <span className="text-sm font-black text-[#00F59B] block">{item.spot}</span>
+                      <span className="text-[10px] bg-white/[0.04] border border-white/[0.08] px-2 py-0.5 rounded text-slate-400">{item.status}</span>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {[
-                {
-                  step: '01',
-                  title: 'Fund a bounty pool in TND (DT)',
-                  desc: 'Set your total budget (starting from 200 DT), your payout rate per 1,000 views, minimum views required, and max payout per single clip.'
-                },
-                {
-                  step: '02',
-                  title: 'Dozens of clippers distribute your content',
-                  desc: 'Independent Tunisian clippers slice your VODs and distribute your best moments across dozens of active TikTok, Reels, and Shorts pages simultaneously.'
-                },
-                {
-                  step: '03',
-                  title: 'Pay only for verified organic views',
-                  desc: 'AI view-velocity checks block fake SMM bot views before escrow releases. Unspent budget at the end of your campaign is 100% refundable.'
-                }
-              ].map((item) => (
-                <div
-                  key={item.step}
-                  className="bg-white border border-[#E5E7EB] rounded-2xl p-6 space-y-3"
-                >
-                  <span className="inline-block text-xs font-mono font-bold text-[#09090B] bg-[#F9FAFB] border border-[#E5E7EB] px-2.5 py-1 rounded-md">
-                    Step {item.step}
-                  </span>
-                  <h3 className="text-base font-bold text-[#09090B]">{item.title}</h3>
-                  <p className="text-xs text-[#52525B] leading-relaxed">{item.desc}</p>
-                </div>
-              ))}
-            </div>
-          )}
+          </div>
         </div>
       </section>
 
       {/* =====================================================================
-          EARLY ACCESS FOUNDING DEALS (2 COMPARISON CARDS)
+          WHY KLIPI WORKS (THE 4 PILLARS)
          ===================================================================== */}
-      <section id="deals" className="py-16 sm:py-24 border-b border-[#E5E7EB]">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-10">
-          <div className="max-w-2xl space-y-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#10B981]">
-              Limited Launch Cohort
+      <section id="how-it-works" className="py-16 sm:py-24 border-b border-white/[0.08]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="text-center max-w-2xl mx-auto mb-14 space-y-2">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#00F59B] bg-[#00F59B]/10 border border-[#00F59B]/25 px-3 py-1 rounded-full font-mono">
+              The Architecture
             </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-[-0.03em] text-[#09090B]">
-              Early Access Founding Deals
+            <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+              Built for the Real Tunisian Creator Economy
             </h2>
-            <p className="text-sm text-[#52525B]">
-              Join the waitlist today to lock in permanent founding perks when we open our first Tunisian wave.
+            <p className="text-xs sm:text-sm text-slate-400">
+              Clear financial rules and brand assets engineered specifically for local video editors and advertisers.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Founding Clipper Card */}
-            <div className="bg-white border border-[#E5E7EB] rounded-2xl p-6 sm:p-8 flex flex-col justify-between space-y-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between gap-2">
-                  <span className="px-2.5 py-1 rounded-md bg-[#ECFDF5] border border-emerald-200 text-xs font-bold text-[#10B981]">
-                    Founding Clipper Pass
-                  </span>
-                  <span className="text-xs font-bold text-[#09090B] tabular-nums">
-                    {clipperSpotsLeft} / 150 spots left
-                  </span>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-extrabold text-[#09090B]">
-                    +15% Bonus CPM on First 3 Clips
-                  </h3>
-                  <p className="text-xs text-[#52525B] mt-1">
-                    For short-form editors & clippers aged 15–40 across Tunisia.
-                  </p>
-                </div>
-
-                <ul className="space-y-2.5 pt-2 border-t border-[#E5E7EB] text-xs text-[#09090B]">
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-[#10B981] shrink-0" />
-                    <span>+15% extra Dinars paid by Klipi on your first 3 verified clips</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-[#10B981] shrink-0" />
-                    <span>Zero-fee Flouci & D17 withdrawals during launch month</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-[#10B981] shrink-0" />
-                    <span>Early access to high-paying launch bounties before public release</span>
-                  </li>
-                </ul>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+            <div className="bg-[#0E1017] border border-white/[0.08] hover:border-white/15 rounded-3xl p-7 space-y-3.5 transition">
+              <div className="w-11 h-11 rounded-2xl bg-[#00F59B]/10 border border-[#00F59B]/25 flex items-center justify-center text-[#00F59B]">
+                <Lock className="w-5 h-5" />
               </div>
-
-              <button
-                onClick={() => {
-                  handleRoleSwitch('Clipper');
-                  scrollToSection('waitlist-form');
-                }}
-                className="w-full h-10 rounded-lg bg-[#09090B] hover:bg-zinc-800 text-white text-xs font-semibold transition-colors"
-              >
-                Claim Founding Clipper Spot
-              </button>
+              <h3 className="text-lg font-black text-white">100% Pre-Funded Escrow (No Ghosting)</h3>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Advertisers (brands, apps, podcasts, streamers) must deposit 100% of the bounty budget into Klipi escrow before campaigns go live. Funds are locked securely and cannot be retracted mid-campaign. When your video hits verified views, your payout in Dinars is guaranteed.
+              </p>
             </div>
 
-            {/* Founding Streamer / Brand Card */}
-            <div className="bg-white border border-[#09090B] rounded-2xl p-6 sm:p-8 flex flex-col justify-between space-y-6 relative">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between gap-2">
-                  <span className="px-2.5 py-1 rounded-md bg-[#09090B] text-white text-xs font-bold">
-                    Founding Streamer / Brand
-                  </span>
-                  <span className="text-xs font-bold text-[#10B981] tabular-nums">
-                    {streamerSpotsLeft} / 40 spots left
-                  </span>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-extrabold text-[#09090B]">
-                    0% Platform Fee for 30 Days
-                  </h3>
-                  <p className="text-xs text-[#52525B] mt-1">
-                    For Kick/Twitch streamers, podcasters, and Tunisian consumer apps.
-                  </p>
-                </div>
-
-                <ul className="space-y-2.5 pt-2 border-t border-[#E5E7EB] text-xs text-[#09090B]">
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-[#10B981] shrink-0" />
-                    <span>100% of your TND budget goes directly to clippers (0% Klipi fee)</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-[#10B981] shrink-0" />
-                    <span>Featured placement at the top of the Clipper Marketplace</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-[#10B981] shrink-0" />
-                    <span>White-glove VOD timestamp setup & AI anti-fraud protection</span>
-                  </li>
-                </ul>
+            <div className="bg-[#0E1017] border border-white/[0.08] hover:border-white/15 rounded-3xl p-7 space-y-3.5 transition">
+              <div className="w-11 h-11 rounded-2xl bg-amber-400/10 border border-amber-400/25 flex items-center justify-center text-amber-400">
+                <Zap className="w-5 h-5" />
               </div>
+              <h3 className="text-lg font-black text-white">Direct Tunisian Cashout Rails (D17 & Flouci)</h3>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                No foreign bank accounts, PayPal, or currency restrictions. Withdraw your earnings directly to your D17 (La Poste Tunisienne), Flouci Wallet, or any 20-digit Tunisian Bank RIB from as low as 10 DT with 0.00 DT fees for founding members.
+              </p>
+            </div>
 
+            <div className="bg-[#0E1017] border border-white/[0.08] hover:border-white/15 rounded-3xl p-7 space-y-3.5 transition">
+              <div className="w-11 h-11 rounded-2xl bg-purple-400/10 border border-purple-400/25 flex items-center justify-center text-purple-400">
+                <Flame className="w-5 h-5 text-amber-400" />
+              </div>
+              <h3 className="text-lg font-black text-white">Ready Brand Kits, Screen Recordings & Audio Drops</h3>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Never start from scratch. App creators supply raw screen recordings and promo codes, podcasters flag viral interview clips, and artists provide official TikTok sound tracks. Pick a campaign and start editing immediately.
+              </p>
+            </div>
+
+            <div className="bg-[#0E1017] border border-white/[0.08] hover:border-white/15 rounded-3xl p-7 space-y-3.5 transition">
+              <div className="w-11 h-11 rounded-2xl bg-blue-400/10 border border-blue-400/25 flex items-center justify-center text-blue-400">
+                <ShieldCheck className="w-5 h-5" />
+              </div>
+              <h3 className="text-lg font-black text-white">Real Views Only (48h Anti-Bot Verification)</h3>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Our verification engine audits genuine Tunisian engagement (retention, comments, likes) and filters out bot farms. This protects advertiser marketing budgets and ensures high-quality editors and creators earn top Dinars.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* =====================================================================
+          FOR BRANDS & ADVERTISERS (B2B VALUE PROP)
+         ===================================================================== */}
+      <section id="brands" className="py-16 sm:py-24 border-b border-white/[0.08] bg-[#0A0C12]">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+          <div className="bg-[#0E1017] border border-white/[0.1] rounded-3xl p-8 sm:p-12 flex flex-col md:flex-row items-center justify-between gap-8 shadow-2xl">
+            <div className="space-y-4 max-w-xl text-left">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#00F59B] bg-[#00F59B]/10 border border-[#00F59B]/25 px-3 py-1 rounded-full font-mono">
+                For Brands, Startups & Shows
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-black text-white leading-snug" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                Stop paying agencies 3,000 DT for 2 videos. Get 50 creators talking about you.
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                Launch a 500 DT pilot bounty on Klipi. Within 48 hours, dozens of Tunisian video editors and UGC creators produce TikToks & Reels testing your app, clipping your podcast, or showing off your product. You only pay for verified views delivered.
+              </p>
+            </div>
+
+            <div className="shrink-0 flex flex-col gap-3 w-full sm:w-auto">
               <button
                 onClick={() => {
-                  handleRoleSwitch('Streamer / Brand');
+                  handleRoleSwitch('Brand');
                   scrollToSection('waitlist-form');
                 }}
-                className="w-full h-10 rounded-lg bg-[#10B981] hover:bg-emerald-600 text-white text-xs font-semibold transition-colors"
+                className="px-6 py-4 rounded-xl bg-[#00F59B] hover:bg-[#00D680] text-[#052014] font-black text-xs transition shadow-xl shadow-[#00F59B]/20"
               >
-                Claim 0% Fee Streamer / Brand Access
+                Launch a Pilot Bounty
+              </button>
+              <button
+                onClick={() => {
+                  handleRoleSwitch('Creator');
+                  scrollToSection('waitlist-form');
+                }}
+                className="px-6 py-3.5 rounded-xl bg-[#141722] border border-white/10 hover:border-white/20 text-white text-xs font-bold text-center transition"
+              >
+                Apply as a Creator / Clipper
               </button>
             </div>
           </div>
@@ -1329,55 +1048,224 @@ export default function App() {
       </section>
 
       {/* =====================================================================
-          BUILT FOR TRUST & SCALE (3 FEATURE PILLARS)
+          MIND-BLOWING APPLICATION ENGINE: LIVE UPDATING FOUNDING PASS
          ===================================================================== */}
-      <section className="py-16 sm:py-24 border-b border-[#E5E7EB]">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-10">
-          <div className="max-w-2xl space-y-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#10B981]">
-              Infrastructure
+      <section id="waitlist-form" className="py-20 sm:py-28 border-b border-white/[0.08]">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+          <div className="text-center space-y-2 mb-12">
+            <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#00F59B] bg-[#00F59B]/10 border border-[#00F59B]/25 px-3.5 py-1 rounded-full font-mono">
+              <Sparkles className="w-3.5 h-3.5" />
+              Founding Cohort Application
             </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-[-0.03em] text-[#09090B]">
-              Built for Trust & Scale in Tunisia
+            <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+              Claim Your Priority Access Pass
             </h2>
+            <p className="text-xs sm:text-sm text-slate-400 max-w-lg mx-auto">
+              First 100 approved creators receive priority access to pilot bounties and lifetime 0% withdrawal fees.
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white border border-[#E5E7EB] rounded-2xl p-6 space-y-3">
-              <div className="w-9 h-9 rounded-lg bg-[#ECFDF5] border border-emerald-200 flex items-center justify-center text-[#10B981]">
-                <Lock className="w-4 h-4" />
-              </div>
-              <h3 className="text-base font-bold text-[#09090B]">
-                Automated Escrow Protection
-              </h3>
-              <p className="text-xs text-[#52525B] leading-relaxed">
-                Clippers never have to chase creators in DMs for payment. Campaign funds are locked upfront and released automatically once view thresholds are met.
-              </p>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            {/* Left 7 Columns: Form Input Console */}
+            <div className="lg:col-span-7 bg-[#0E1017] border border-white/[0.09] rounded-3xl p-6 sm:p-8 shadow-2xl text-left">
+              {submittedEntry ? (
+                <div className="bg-[#0B0C10] border border-[#00F59B]/40 rounded-2xl p-6 text-center space-y-4 animate-fade-in">
+                  <CheckCircle2 className="w-14 h-14 text-[#00F59B] mx-auto" />
+                  <div>
+                    <h3 className="text-xl font-black text-white font-mono">You're On The Founding Roster!</h3>
+                    <p className="text-xs text-slate-400 mt-1.5">
+                      Your priority ticket <strong className="text-white font-mono">#{submittedEntry.queue}</strong> is locked. We will message your WhatsApp with pilot onboarding instructions.
+                    </p>
+                  </div>
+
+                  <div className="bg-[#14151E] border border-white/10 rounded-xl p-4 flex items-center justify-between gap-2 font-mono text-xs">
+                    <span className="text-[#00F59B] font-bold text-sm">{submittedEntry.refCode}</span>
+                    <button
+                      onClick={() => handleCopyRef(submittedEntry.refCode)}
+                      className="flex items-center gap-1.5 px-3.5 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-lg transition"
+                    >
+                      {copiedRef ? <Check className="w-3.5 h-3.5 text-[#00F59B]" /> : <Copy className="w-3.5 h-3.5" />}
+                      <span>{copiedRef ? 'Copied Link' : 'Copy Invite Link'}</span>
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <form onSubmit={handleWaitlistSubmit} className="space-y-4">
+                  {/* Role Switcher */}
+                  <div className="grid grid-cols-2 gap-2 bg-[#08090E] p-1.5 rounded-2xl border border-white/[0.08]">
+                    <button
+                      type="button"
+                      onClick={() => handleRoleSwitch('Creator')}
+                      className={`py-2.5 text-xs font-bold rounded-xl transition-all ${
+                        role === 'Creator'
+                          ? 'bg-white text-black shadow-md'
+                          : 'text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      I'm a Creator / Clipper
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleRoleSwitch('Brand')}
+                      className={`py-2.5 text-xs font-bold rounded-xl transition-all ${
+                        role !== 'Creator'
+                          ? 'bg-white text-black shadow-md'
+                          : 'text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      I'm a Brand, App, or Show
+                    </button>
+                  </div>
+
+                  {errorMsg && (
+                    <div className="p-3 bg-rose-500/10 border border-rose-500/25 text-rose-400 text-xs rounded-xl flex items-center gap-2">
+                      <X className="w-4 h-4 shrink-0" />
+                      <span>{errorMsg}</span>
+                    </div>
+                  )}
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                      {role === 'Creator' ? 'Full Name or Creator / Editor Handle' : 'Brand, App, Podcast or Channel Name'}
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      placeholder={role === 'Creator' ? 'e.g. Farouk Clips (@farouk_tn)' : 'e.g. Yalla Delivery / Tunis Founders Pod'}
+                      className="w-full bg-black/40 border border-white/[0.1] rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-[#00F59B] font-mono transition"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                      WhatsApp Number (for launch alert & onboarding)
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={contact}
+                      onChange={(e) => setContact(e.target.value)}
+                      placeholder="+216 20 000 000"
+                      className="w-full bg-black/40 border border-white/[0.1] rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-[#00F59B] font-mono transition"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                        {role === 'Creator' ? 'Primary Format' : 'Campaign Type'}
+                      </label>
+                      {role === 'Creator' ? (
+                        <select
+                          value={categoryInterest}
+                          onChange={(e) => setCategoryInterest(e.target.value)}
+                          className="w-full bg-black/40 border border-white/[0.1] rounded-xl px-3.5 py-3 text-xs text-white focus:outline-none focus:border-[#00F59B] font-mono transition"
+                        >
+                          <option>Video Editing & Subtitles</option>
+                          <option>UGC & On-Camera Product Reviews</option>
+                          <option>App Screen Recording POVs</option>
+                          <option>Music & Trending Sound Edits</option>
+                          <option>Gaming Stream Highlights</option>
+                        </select>
+                      ) : (
+                        <select
+                          value={categoryInterest}
+                          onChange={(e) => setCategoryInterest(e.target.value)}
+                          className="w-full bg-black/40 border border-white/[0.1] rounded-xl px-3.5 py-3 text-xs text-white focus:outline-none focus:border-[#00F59B] font-mono transition"
+                        >
+                          <option>Mobile App / SaaS Promotion</option>
+                          <option>E-commerce / Food Delivery UGC</option>
+                          <option>Podcast & Interview Clipping</option>
+                          <option>Music Track / Sound Launch</option>
+                          <option>Live Stream / Gaming Highlights</option>
+                        </select>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                        {role === 'Creator' ? 'Payout Channel' : 'Target Pilot Budget'}
+                      </label>
+                      {role === 'Creator' ? (
+                        <select
+                          value={detailField}
+                          onChange={(e) => setDetailField(e.target.value)}
+                          className="w-full bg-black/40 border border-white/[0.1] rounded-xl px-3.5 py-3 text-xs text-white focus:outline-none focus:border-[#00F59B] font-mono transition"
+                        >
+                          <option>D17 (La Poste Tunisienne)</option>
+                          <option>Flouci Wallet</option>
+                          <option>Bank RIB / CIB (20 digits)</option>
+                        </select>
+                      ) : (
+                        <select
+                          value={detailField}
+                          onChange={(e) => setDetailField(e.target.value)}
+                          className="w-full bg-black/40 border border-white/[0.1] rounded-xl px-3.5 py-3 text-xs text-white focus:outline-none focus:border-[#00F59B] font-mono transition"
+                        >
+                          <option>300 – 800 DT / campaign</option>
+                          <option>800 – 2,000 DT / campaign</option>
+                          <option>2,000 – 5,000 DT / campaign</option>
+                          <option>5,000+ DT / campaign</option>
+                        </select>
+                      )}
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="w-full bg-[#00F59B] hover:bg-[#00D680] text-[#052014] font-black text-xs py-4 rounded-xl transition shadow-xl shadow-[#00F59B]/20 flex items-center justify-center gap-2 mt-2"
+                  >
+                    <span>{submitting ? 'Generating Priority Pass...' : 'Claim Founding Member Pass'}</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </form>
+              )}
             </div>
 
-            <div className="bg-white border border-[#E5E7EB] rounded-2xl p-6 space-y-3">
-              <div className="w-9 h-9 rounded-lg bg-[#F9FAFB] border border-[#E5E7EB] flex items-center justify-center text-[#09090B]">
-                <ShieldCheck className="w-4 h-4" />
+            {/* Right 5 Columns: Live Updating Holographic Founding Pass Preview */}
+            <div className="lg:col-span-5 perspective-1000">
+              <div className="hologram-card rounded-3xl border border-white/20 p-6 shadow-2xl space-y-5 text-left bg-gradient-to-br from-[#12141F] to-[#0A0B10]">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <KlipiLogoMark size="w-7 h-7" />
+                    <span className="text-xs font-black tracking-wider text-white font-mono">FOUNDING PASS</span>
+                  </div>
+                  <span className="text-[10px] font-mono font-bold text-[#00F59B] bg-[#00F59B]/10 px-2 py-0.5 rounded border border-[#00F59B]/25">
+                    PRIORITY #50
+                  </span>
+                </div>
+
+                {/* Dynamic Card Member Data */}
+                <div className="p-4 rounded-2xl bg-black/50 border border-white/[0.08] space-y-3 font-mono">
+                  <div className="text-[10px] text-slate-500 uppercase">MEMBER IDENTITY</div>
+                  <div className="text-lg font-bold text-white truncate">
+                    {fullName.trim() || '@your_handle'}
+                  </div>
+                  <div className="flex items-center justify-between text-xs pt-1 border-t border-white/[0.06]">
+                    <span className="text-slate-400">ROLE</span>
+                    <span className="text-[#00F59B] font-bold">{role.toUpperCase()}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-slate-400">CHANNEL</span>
+                    <span className="text-white font-bold">{detailField.split(' ')[0]}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-slate-400">CATEGORY</span>
+                    <span className="text-white truncate max-w-[140px]">{categoryInterest.split(' ')[0]}</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono">
+                  <span>0% WITHDRAWAL FEE GUARANTEE</span>
+                  <span className="text-[#00F59B]">ACTIVE TICKET</span>
+                </div>
               </div>
-              <h3 className="text-base font-bold text-[#09090B]">
-                AI View-Velocity Anti-Fraud
-              </h3>
-              <p className="text-xs text-[#52525B] leading-relaxed">
-                We analyze view growth curves and engagement ratios over a 48-hour verification hold to block fake SMM panel views before a single Dinar leaves escrow.
-              </p>
             </div>
 
-            <div className="bg-white border border-[#E5E7EB] rounded-2xl p-6 space-y-3">
-              <div className="w-9 h-9 rounded-lg bg-[#ECFDF5] border border-emerald-200 flex items-center justify-center text-[#10B981]">
-                <Wallet className="w-4 h-4" />
-              </div>
-              <h3 className="text-base font-bold text-[#09090B]">
-                Local TND Payout Rails
-              </h3>
-              <p className="text-xs text-[#52525B] leading-relaxed">
-                No international cards or PayPal workarounds needed. Earn in Tunisian Dinars (DT) and withdraw directly to D17, Flouci, or any Tunisian bank RIB.
-              </p>
-            </div>
           </div>
         </div>
       </section>
@@ -1385,194 +1273,253 @@ export default function App() {
       {/* =====================================================================
           FAQ ACCORDION
          ===================================================================== */}
-      <section id="faq" className="py-16 sm:py-24 border-b border-[#E5E7EB]">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 space-y-8">
-          <div className="space-y-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#10B981]">
-              Questions & Answers
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-[-0.03em] text-[#09090B]">
-              Frequently Asked Questions
-            </h2>
+      <section id="faq" className="py-16 sm:py-24 border-b border-white/[0.08]">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6">
+          <div className="text-center space-y-2 mb-10">
+            <h2 className="text-3xl sm:text-4xl font-black text-white" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Frequently Asked Questions</h2>
+            <p className="text-xs text-slate-400">Everything you need to know about the Content Rewards model, escrow, and D17 payouts.</p>
           </div>
 
-          <div className="space-y-3">
-            {FAQ_ITEMS.map((item, index) => {
-              const isOpen = openFaq === index;
-              return (
-                <div
-                  key={item.q}
-                  className="bg-white border border-[#E5E7EB] rounded-xl overflow-hidden"
+          <div className="space-y-3 text-left">
+            {FAQ_ITEMS.map((item, idx) => (
+              <div
+                key={idx}
+                className="bg-[#0E1017] border border-white/[0.08] rounded-2xl overflow-hidden transition"
+              >
+                <button
+                  onClick={() => setOpenFaq(openFaq === idx ? -1 : idx)}
+                  className="w-full p-4 sm:p-5 text-left flex items-center justify-between gap-4 text-xs sm:text-sm font-bold text-white hover:text-[#00F59B] transition"
                 >
-                  <button
-                    type="button"
-                    onClick={() => setOpenFaq(isOpen ? -1 : index)}
-                    className="w-full px-5 py-4 text-left flex items-center justify-between gap-4 hover:bg-[#F9FAFB]/60 transition-colors"
-                  >
-                    <span className="text-xs sm:text-sm font-bold text-[#09090B]">
-                      {item.q}
-                    </span>
-                    <ChevronDown
-                      className={`w-4 h-4 text-[#52525B] shrink-0 transition-transform ${
-                        isOpen ? 'rotate-180' : ''
-                      }`}
-                    />
-                  </button>
-                  {isOpen && (
-                    <div className="px-5 pb-4 text-xs text-[#52525B] leading-relaxed border-t border-[#E5E7EB]/60 pt-3">
-                      {item.a}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+                  <span>{item.q}</span>
+                  <ChevronDown
+                    className={`w-4 h-4 text-slate-400 transition-transform ${
+                      openFaq === idx ? 'rotate-180 text-[#00F59B]' : ''
+                    }`}
+                  />
+                </button>
+                {openFaq === idx && (
+                  <div className="px-5 pb-5 text-xs text-slate-400 leading-relaxed border-t border-white/[0.04] pt-3.5">
+                    {item.a}
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* =====================================================================
-          BOTTOM CTA + FOOTER WITH DISCREET FOUNDER ADMIN DRAWER TRIGGER
+          FOOTER
          ===================================================================== */}
-      <footer className="bg-white py-12">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-10">
-          {/* Final Banner */}
-          <div className="rounded-2xl bg-[#09090B] text-white p-8 sm:p-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-            <div className="space-y-2 max-w-xl">
-              <h3 className="text-xl sm:text-2xl font-extrabold tracking-tight">
-                Ready to clip or launch your first TND bounty?
-              </h3>
-              <p className="text-xs sm:text-sm text-zinc-400">
-                Reserve your spot on the klipi.tn early access list and lock in founding member rewards.
-              </p>
+      <footer className="py-12 bg-[#08090E] text-slate-500 text-xs">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div className="flex items-center gap-3">
+            <KlipiLogoMark size="w-7 h-7" />
+            <div className="flex items-center">
+              <span
+                className="text-base font-black tracking-tight text-white"
+                style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+              >
+                klipi
+              </span>
+              <span className="text-[9px] font-bold font-mono text-[#00F59B] bg-[#00F59B]/10 border border-[#00F59B]/25 px-1.5 py-0.5 rounded ml-1 tracking-wider uppercase">
+                TN
+              </span>
             </div>
-            <button
-              onClick={() => scrollToSection('waitlist-form')}
-              className="px-5 py-3 rounded-lg bg-[#10B981] hover:bg-emerald-600 text-white text-xs font-bold transition-colors inline-flex items-center gap-2 shrink-0"
-            >
-              <span>Join Early Access Waitlist</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
+            <span className="text-slate-600 hidden sm:inline">•</span>
+            <span className="hidden sm:inline text-slate-400">Tunisia's Content Bounty Protocol (Private Beta)</span>
           </div>
 
-          {/* Footer Bottom Bar */}
-          <div className="pt-6 border-t border-[#E5E7EB] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#52525B]">
-            <div className="flex items-center gap-2">
-              <KlipiLogoMark size="w-5 h-5" />
-              <span className="font-bold text-[#09090B]">klipi.tn</span>
-              <span>• Built for Tunisia’s Creator Economy</span>
-            </div>
-
-            
+          <div className="flex items-center gap-6">
+            <span className="text-slate-400">Tunisia’s Creator Escrow Protocol</span>
+            <span>© 2026 Klipi.tn. Pre-Launch Validation Phase.</span>
           </div>
         </div>
       </footer>
 
       {/* =====================================================================
-          FOUNDER ADMIN / WAITLIST DRAWER (CSV EXPORT + LEAD INSPECTOR)
+          SLIDE-OVER PILOT BRIEF DRAWER (WITH CATEGORY COVER IMAGE)
          ===================================================================== */}
-      {founderDrawerOpen && (
-        <div className="fixed inset-0 z-50 flex justify-end bg-black/35 backdrop-blur-[1px]">
-          <div
-            className="fixed inset-0"
-            onClick={() => setFounderDrawerOpen(false)}
-          />
-          <aside className="relative z-10 w-full max-w-2xl bg-white h-full border-l border-[#E5E7EB] flex flex-col justify-between overflow-y-auto shadow-2xl">
-            <div className="p-6 space-y-5">
-              {/* Header */}
-              <div className="flex items-start justify-between gap-4 pb-4 border-b border-[#E5E7EB]">
+      {selectedBounty && (
+        <div className="fixed inset-0 z-50 flex justify-end bg-black/80 backdrop-blur-md">
+          <div className="w-full max-w-lg bg-[#0E1017] h-full border-l border-white/10 shadow-2xl flex flex-col justify-between overflow-y-auto animate-slide-left text-left">
+            <div>
+              {/* Drawer Hero Banner with Image */}
+              <div className="relative h-48 overflow-hidden border-b border-white/[0.08]">
+                <img
+                  src={selectedBounty.coverImage}
+                  alt={selectedBounty.title}
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0E1017] via-[#0E1017]/75 to-black/40" />
+
+                <div className="relative z-10 h-full p-5 flex flex-col justify-between">
+                  <div className="flex items-center justify-between">
+                    <span className={`text-xs font-bold px-2.5 py-0.5 rounded-md border backdrop-blur-md shadow-sm ${selectedBounty.tagBg}`}>
+                      {selectedBounty.category} • {selectedBounty.bountyType}
+                    </span>
+                    <button
+                      onClick={() => setSelectedBounty(null)}
+                      className="w-8 h-8 rounded-full bg-black/60 border border-white/20 flex items-center justify-center text-slate-300 hover:text-white transition shadow-lg"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  <div className="flex items-end justify-between">
+                    <span className="text-xs bg-[#08090E]/90 text-[#00F59B] font-black px-3 py-1 rounded-lg border border-[#00F59B]/40 font-mono shadow-lg">
+                      {selectedBounty.cpmTnd.toFixed(2)} DT / 1,000 views
+                    </span>
+                    <span className="text-xs text-white font-mono bg-black/60 backdrop-blur-sm px-2.5 py-1 rounded-lg border border-white/10">
+                      Target Cap: {selectedBounty.maxPerClipTnd} DT
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Drawer Body Content */}
+              <div className="p-6 space-y-5">
                 <div>
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#10B981]">
-                    Founder Lead Console
-                  </span>
-                  <h3 className="text-lg font-bold text-[#09090B]">
-                    Klipi.tn Waitlist Signups ({waitlist.length})
+                  <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-[#00F59B]/10 border border-[#00F59B]/20 text-[10px] font-bold text-[#00F59B] mb-2 uppercase tracking-wider font-mono">
+                    Pilot Launch Campaign
+                  </div>
+                  <h2 className="text-xl font-black text-white leading-snug">
+                    {selectedBounty.title}
+                  </h2>
+                  <div className="flex items-center gap-2 mt-2">
+                    <div className={`w-6 h-6 rounded-md border flex items-center justify-center text-[10px] font-bold ${selectedBounty.avatarBg}`}>
+                      {selectedBounty.initials}
+                    </div>
+                    <span className="text-xs text-white font-bold">{selectedBounty.creator}</span>
+                    <span className="text-xs text-slate-400 font-mono">({selectedBounty.handle})</span>
+                    <span className="text-xs text-[#00F59B] font-semibold">• {selectedBounty.audience}</span>
+                  </div>
+                </div>
+
+                {/* Pre-Funded Escrow Guarantee Banner */}
+                <div className="bg-[#12141F] border border-white/[0.08] rounded-xl p-3.5 flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-[#00F59B]/10 border border-[#00F59B]/20 flex items-center justify-center shrink-0 mt-0.5">
+                    <Lock className="w-4 h-4 text-[#00F59B]" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h4 className="text-xs font-bold text-white">Escrow Guarantee on Launch</h4>
+                      <span className="text-[10px] font-bold text-[#00F59B] bg-[#00F59B]/10 px-1.5 py-0.5 rounded font-mono">
+                        PLANNED POOL
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">
+                      <strong className="text-white font-mono">{selectedBounty.targetPoolTnd.toLocaleString()} DT</strong> will be pre-deposited by {selectedBounty.creator} upon private beta start.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Brand Assets / Hot Timestamps */}
+                <div className="bg-black/40 border border-white/[0.08] rounded-2xl p-4 space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                      <Flame className="w-3.5 h-3.5 text-amber-400" /> Hook Segments & Brand Kit
+                    </span>
+                    <span className="text-[11px] text-slate-400 font-mono">Click to copy</span>
+                  </div>
+                  <div className="space-y-2">
+                    {selectedBounty.hotTimestamps.map((ts) => (
+                      <div
+                        key={ts.time}
+                        onClick={() => handleCopyTimestamp(ts.time)}
+                        className="bg-white/[0.04] border border-white/[0.06] hover:border-[#00F59B]/30 rounded-xl px-3 py-2 flex items-center justify-between cursor-pointer transition"
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <span className="font-mono text-xs font-bold bg-[#00F59B] text-[#052014] px-2 py-0.5 rounded">
+                            {ts.time}
+                          </span>
+                          <span className="text-xs font-medium text-slate-200 truncate">
+                            {ts.label}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span className="text-[11px] text-[#00F59B] font-bold font-mono">{ts.spike}</span>
+                          {copiedTimestamp === ts.time ? (
+                            <Check className="w-3.5 h-3.5 text-[#00F59B]" />
+                          ) : (
+                            <Copy className="w-3.5 h-3.5 text-slate-500" />
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Rules & Anti-Bot Policy */}
+                <div>
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2 font-mono">
+                    Campaign Brief & Guidelines
                   </h3>
-                  <p className="text-xs text-[#52525B]">
-                    All signups are saved in your browser and ready to export as a CSV for WhatsApp/Email outreach.
-                  </p>
+                  <ul className="space-y-2">
+                    {selectedBounty.rules.map((rule, idx) => (
+                      <li key={idx} className="text-xs text-slate-300 flex items-start gap-2">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-[#00F59B] shrink-0 mt-0.5" />
+                        <span>{rule}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={handleExportCsv}
-                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#10B981] hover:bg-emerald-600 text-white text-xs font-semibold transition-colors"
-                  >
-                    <Download className="w-3.5 h-3.5" />
-                    <span>Export CSV</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setFounderDrawerOpen(false)}
-                    className="p-2 rounded-lg text-[#52525B] hover:bg-zinc-100"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Summary Counts */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="p-3.5 rounded-xl bg-[#F9FAFB] border border-[#E5E7EB]">
-                  <div className="text-xs text-[#52525B]">Clippers Ready</div>
-                  <div className="text-xl font-bold text-[#09090B] tabular-nums mt-0.5">
-                    {waitlist.filter((w) => w.role === 'Clipper').length}
+                {/* Payout Simulator */}
+                <div className="bg-[#00F59B]/5 border border-[#00F59B]/20 rounded-2xl p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-bold text-white font-mono">Projected Launch Earnings</span>
+                    <span className="text-base font-black text-[#00F59B] font-mono">
+                      {calculatedEstimate.toFixed(2)} DT
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min={selectedBounty.minViews}
+                    max={150000}
+                    step={1000}
+                    value={estimatedViews}
+                    onChange={(e) => setEstimatedViews(Number(e.target.value))}
+                    className="w-full accent-[#00F59B] cursor-pointer"
+                  />
+                  <div className="flex justify-between text-[11px] text-slate-400 mt-1 font-mono">
+                    <span>{estimatedViews.toLocaleString()} views</span>
+                    <span>Cap: {selectedBounty.maxPerClipTnd} DT / video</span>
                   </div>
                 </div>
-                <div className="p-3.5 rounded-xl bg-[#F9FAFB] border border-[#E5E7EB]">
-                  <div className="text-xs text-[#52525B]">Streamers & Brands</div>
-                  <div className="text-xl font-bold text-[#10B981] tabular-nums mt-0.5">
-                    {waitlist.filter((w) => w.role === 'Streamer / Brand').length}
+
+                {/* Cashout Rails */}
+                <div>
+                  <span className="text-[11px] text-slate-400 font-semibold block mb-1.5 font-mono">Direct Cashout Rails</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] bg-white/5 border border-white/10 px-2.5 py-1 rounded-lg text-slate-300 font-mono">
+                      D17 (La Poste)
+                    </span>
+                    <span className="text-[11px] bg-white/5 border border-white/10 px-2.5 py-1 rounded-lg text-slate-300 font-mono">
+                      Flouci Wallet
+                    </span>
+                    <span className="text-[11px] bg-white/5 border border-white/10 px-2.5 py-1 rounded-lg text-slate-300 font-mono">
+                      Bank RIB (20-digit)
+                    </span>
                   </div>
                 </div>
-              </div>
 
-              {/* Leads Table */}
-              <div className="border border-[#E5E7EB] rounded-xl overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left border-collapse text-xs">
-                    <thead>
-                      <tr className="bg-[#F9FAFB] border-b border-[#E5E7EB] text-[11px] font-semibold text-[#52525B]">
-                        <th className="py-2.5 px-3.5">Role</th>
-                        <th className="py-2.5 px-3.5">Name / Handle</th>
-                        <th className="py-2.5 px-3.5">Contact</th>
-                        <th className="py-2.5 px-3.5">Rail / Budget</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-[#E5E7EB]">
-                      {waitlist.map((lead) => (
-                        <tr key={lead.id} className="hover:bg-[#F9FAFB]/70">
-                          <td className="py-2.5 px-3.5 whitespace-nowrap">
-                            <span
-                              className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                                lead.role === 'Clipper'
-                                  ? 'bg-zinc-100 text-[#09090B]'
-                                  : 'bg-[#ECFDF5] text-[#10B981]'
-                              }`}
-                            >
-                              {lead.role}
-                            </span>
-                          </td>
-                          <td className="py-2.5 px-3.5 font-semibold text-[#09090B]">
-                            {lead.name}
-                            <div className="text-[10px] font-normal text-[#52525B]">
-                              {lead.platform} • {lead.refCode}
-                            </div>
-                          </td>
-                          <td className="py-2.5 px-3.5 text-[#52525B] tabular-nums">
-                            {lead.contact}
-                          </td>
-                          <td className="py-2.5 px-3.5 text-[#09090B] font-medium">
-                            {lead.detail}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                {/* CTA to Waitlist */}
+                <div className="pt-2">
+                  <button
+                    onClick={() => {
+                      setSelectedBounty(null);
+                      scrollToSection('waitlist-form');
+                    }}
+                    className="w-full bg-[#00F59B] hover:bg-[#00D680] text-[#052014] text-xs font-black py-4 rounded-xl transition shadow-xl shadow-[#00F59B]/20 flex items-center justify-center gap-2"
+                  >
+                    <span>Join Waitlist for This Bounty</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
             </div>
-          </aside>
+          </div>
         </div>
       )}
     </div>
