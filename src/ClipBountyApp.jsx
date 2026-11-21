@@ -490,15 +490,20 @@ export default function ClipBountyApp() {
               <KlipiLogo size="w-8 h-8" />
               <div className="flex items-center">
                 <span
-                  className="text-xl font-black tracking-[-0.03em] text-white group-hover:text-[#00F090] transition duration-200"
+                  className="text-2xl font-black tracking-[-0.04em] text-white group-hover:text-[#00F090] transition duration-200"
                   style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                 >
                   klipi
                 </span>
-                <span className="text-[10px] font-bold font-mono text-[#00F090] bg-[#00F090]/10 border border-[#00F090]/25 px-1.5 py-0.5 rounded ml-1.5 tracking-wider uppercase">
-                  TN
-                </span>
+                <span className="w-2 h-2 rounded-sm bg-[#00F090] ml-1 shadow-[0_0_8px_#00F090]" />
               </div>
+            </a>
+
+            <a
+              href="/"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 px-3 py-1.5 rounded-lg transition"
+            >
+              ← Back to Overview
             </a>
 
             <span className="hidden sm:inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-[#00F090] bg-[#00F090]/10 border border-[#00F090]/20 px-2.5 py-0.5 rounded-full">

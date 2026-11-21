@@ -20,7 +20,9 @@ import {
   ShoppingBag,
   Gamepad2,
   Sliders,
-  Award
+  Award,
+  Tv,
+  Play
 } from 'lucide-react';
 import { supabase } from './supabaseClient';
 
@@ -49,13 +51,13 @@ const KlipiLogoMark = ({ size = 'w-9 h-9' }) => (
 
 // --- PRE-LAUNCH VALIDATION TICKER (Multi-category activity stream) ---
 const RECENT_ACTIVITIES = [
-  { id: 1, user: '@farouk_clips', text: 'reserved spot #47 on Founding Creator Waitlist', badge: 'D17', time: '2m ago' },
-  { id: 2, user: '@yalladelivery.tn', text: 'pledged 3,000 DT food delivery UGC launch bounty', badge: 'Pilot Brand', time: '6m ago' },
-  { id: 3, user: '@sarra.edit', text: 'reserved spot #48 on Founding Creator Waitlist', badge: 'Flouci', time: '11m ago' },
-  { id: 4, user: '@tunisianfounders', text: 'pledged 1,500 DT podcast viral clips pool', badge: 'Pilot Podcast', time: '18m ago' },
-  { id: 5, user: '@amine_ugc', text: 'reserved spot #49 on Founding Creator Waitlist', badge: 'Bank RIB', time: '29m ago' },
-  { id: 6, user: '@konnect.network', text: 'pledged 2,500 DT fintech app demo & UGC bounty', badge: 'Pilot SaaS', time: '41m ago' },
-  { id: 7, user: '@kamelgaming.tn', text: 'pledged 2,000 DT Season 4 Kick stream bounty pool', badge: 'Pilot Streamer', time: '53m ago' },
+  { id: 1, user: '@farouk_clips', text: 'reserved spot #14 on Founding Creator Waitlist', badge: 'D17 Verified', time: '2m ago' },
+  { id: 2, user: '@kamelgaming.tn', text: '[Pilot Spec] 2,000 DT Kick stream clipping pool blueprint', badge: 'Streamer Spec', time: '6m ago' },
+  { id: 3, user: '@sarra.edit', text: 'reserved spot #15 on Founding Creator Waitlist', badge: 'Flouci Verified', time: '11m ago' },
+  { id: 4, user: '@tunisianfounders', text: '[Pilot Spec] 1,500 DT podcast interview clips blueprint', badge: 'Podcast Spec', time: '18m ago' },
+  { id: 5, user: '@amine_ugc', text: 'reserved spot #16 on Founding Creator Waitlist', badge: 'Bank RIB', time: '29m ago' },
+  { id: 6, user: '@konnect.network', text: '[Pilot Spec] 2,500 DT fintech app demo & UGC blueprint', badge: 'SaaS Spec', time: '41m ago' },
+  { id: 7, user: '@yalladelivery.tn', text: '[Pilot Spec] 3,000 DT food delivery POV video blueprint', badge: 'Brand Spec', time: '53m ago' },
 ];
 
 // --- UPCOMING PILOT BOUNTIES (Brands, SaaS Apps, Podcasts, Music, Streamers) ---
@@ -67,7 +69,7 @@ const BOUNTIES_DATABASE = [
     bountyType: 'App Demo & UGC',
     category: 'Apps & SaaS',
     audience: '45K on LinkedIn & Web',
-    statusBadge: 'Pilot in Pre-Funding',
+    statusBadge: 'Sample Launch Spec',
     coverImage: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=900&q=80',
     avatarBg: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30',
     tagBg: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/35',
@@ -99,7 +101,7 @@ const BOUNTIES_DATABASE = [
     bountyType: 'Brand UGC Video',
     category: 'Brands & E-com',
     audience: 'Tunisia-wide App',
-    statusBadge: 'Pilot in Pre-Funding',
+    statusBadge: 'Sample Launch Spec',
     coverImage: 'https://images.unsplash.com/photo-1561758033-d89a9ad46330?auto=format&fit=crop&w=900&q=80',
     avatarBg: 'bg-[#00F59B]/20 text-[#00F59B] border-[#00F59B]/30',
     tagBg: 'bg-[#00F59B]/20 text-[#00F59B] border-[#00F59B]/35',
@@ -131,7 +133,7 @@ const BOUNTIES_DATABASE = [
     bountyType: 'Podcast Clipping',
     category: 'Podcasts & Shows',
     audience: '85K on YouTube & Spotify',
-    statusBadge: 'Pilot in Pre-Funding',
+    statusBadge: 'Sample Launch Spec',
     coverImage: 'https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=900&q=80',
     avatarBg: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
     tagBg: 'bg-blue-500/20 text-blue-300 border-blue-500/35',
@@ -163,7 +165,7 @@ const BOUNTIES_DATABASE = [
     bountyType: 'TikTok Sound Promo',
     category: 'Music & Sounds',
     audience: '1.2M on TikTok & YouTube',
-    statusBadge: 'Pilot in Pre-Funding',
+    statusBadge: 'Sample Launch Spec',
     coverImage: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=900&q=80',
     avatarBg: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
     tagBg: 'bg-amber-500/20 text-amber-300 border-amber-500/35',
@@ -195,7 +197,7 @@ const BOUNTIES_DATABASE = [
     bountyType: 'Stream Highlight Clipping',
     category: 'Gaming & Streamers',
     audience: '142K on Kick',
-    statusBadge: 'Pilot in Pre-Funding',
+    statusBadge: 'Sample Launch Spec',
     coverImage: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=900&q=80',
     avatarBg: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
     tagBg: 'bg-purple-500/20 text-purple-300 border-purple-500/35',
@@ -228,7 +230,7 @@ const BOUNTIES_DATABASE = [
     bountyType: 'Venue & Match UGC',
     category: 'Brands & E-com',
     audience: '32K on Facebook & IG',
-    statusBadge: 'Pilot in Pre-Funding',
+    statusBadge: 'Sample Launch Spec',
     coverImage: 'https://images.unsplash.com/photo-1517466787929-bc90951d0974?auto=format&fit=crop&w=900&q=80',
     avatarBg: 'bg-rose-500/20 text-rose-300 border-rose-500/30',
     tagBg: 'bg-rose-500/20 text-rose-300 border-rose-500/35',
@@ -343,6 +345,26 @@ export default function KlipiLandingPage() {
   };
 
   const [openFaq, setOpenFaq] = useState(0);
+  const [cloudSaved, setCloudSaved] = useState(null);
+
+  // Smooth jump to waitlist with matching role and input focus ring (Point B)
+  const jumpToWaitlist = (targetRole = 'Creator') => {
+    handleRoleSwitch(targetRole);
+    const el = document.getElementById('waitlist-form');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setTimeout(() => {
+        const input = document.getElementById('waitlist-handle-input');
+        if (input) {
+          input.focus();
+          input.classList.add('ring-2', 'ring-[#00F59B]', 'ring-offset-2', 'ring-offset-[#08090E]');
+          setTimeout(() => {
+            input.classList.remove('ring-2', 'ring-[#00F59B]', 'ring-offset-2', 'ring-offset-[#08090E]');
+          }, 2500);
+        }
+      }, 500);
+    }
+  };
 
   const handleWaitlistSubmit = async (e) => {
     e.preventDefault();
@@ -355,26 +377,32 @@ export default function KlipiLandingPage() {
     const refParam = new URLSearchParams(window.location.search).get('ref');
 
     try {
-      const { error: sbError } = await supabase.from('waitlist').insert([
-        {
-          role: role === 'Creator' ? 'creator' : 'brand',
-          handle: fullName.trim(),
-          contact: contact.trim(),
-          payout_or_budget: `${detailField} (${categoryInterest})`,
-          referral_code: refCode,
-          referred_by: refParam || null,
-        }
-      ]);
+      // Note: Map to roles that satisfy existing database check constraints
+      const payload = {
+        role: role === 'Creator' ? 'clipper' : 'streamer',
+        handle: fullName.trim(),
+        contact: contact.trim(),
+        payout_or_budget: `[${role}] ${detailField} • ${categoryInterest}`,
+        referral_code: refCode,
+        referred_by: refParam || null,
+      };
+
+      const { data, error: sbError } = await supabase.from('waitlist').insert([payload]).select();
 
       if (sbError) {
+        console.warn('Supabase waitlist notice:', sbError);
         if (sbError.code === '23505') {
-          setErrorMsg('This WhatsApp number or email is already registered on the waitlist!');
+          setErrorMsg('This WhatsApp number or handle is already registered on the waitlist!');
           setSubmitting(false);
           return;
         }
+        setCloudSaved(false);
+      } else if (data && data.length > 0) {
+        setCloudSaved(true);
       }
-    } catch {
-      // offline fallback
+    } catch (err) {
+      console.warn('Supabase connection notice:', err);
+      setCloudSaved(false);
     }
 
     let queuePos = 50 + waitlist.length;
@@ -480,9 +508,17 @@ export default function KlipiLandingPage() {
               <span className="font-bold text-white font-mono text-[11px]">PRIVATE BETA</span>
             </div>
 
+            <a
+              href="/demo"
+              className="hidden sm:inline-flex items-center gap-1.5 text-xs font-bold text-[#00F59B] bg-[#00F59B]/10 hover:bg-[#00F59B]/20 border border-[#00F59B]/30 px-3.5 py-2 rounded-xl transition shadow-[0_0_12px_rgba(0,245,155,0.15)] group"
+            >
+              <Play className="w-3 h-3 fill-[#00F59B] group-hover:scale-110 transition-transform" />
+              <span>Interactive Demo</span>
+            </a>
+
             <button
-              onClick={() => scrollToSection('waitlist-form')}
-              className="px-4 py-2 rounded-xl bg-[#00F59B] hover:bg-[#00D680] text-[#052014] text-xs font-black transition-all duration-200 flex items-center gap-1.5 shadow-lg shadow-[#00F59B]/15 hover:shadow-[#00F59B]/30 hover:scale-[1.02]"
+              onClick={() => jumpToWaitlist('Creator')}
+              className="px-4 py-2 rounded-xl bg-[#00F59B] hover:bg-[#00D680] text-[#052014] text-xs font-black transition-all duration-200 flex items-center gap-1.5 shadow-lg shadow-[#00F59B]/15 hover:shadow-[#00F59B]/30 hover:scale-[1.02] cursor-pointer"
             >
               <span>Join Waitlist</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -539,7 +575,7 @@ export default function KlipiLandingPage() {
               </h1>
 
               <p className="text-base sm:text-lg text-slate-300 max-w-xl leading-relaxed">
-                Tunisian brands, SaaS apps, podcasts, and artists lock cash bounties in escrow. You turn their moments and products into viral TikToks & Reels. Every 1,000 verified views pays out straight to <strong className="text-white font-medium">D17, Flouci, or Bank RIB.</strong>
+                Tunisian brands, SaaS apps, <span className="text-white font-bold underline decoration-[#00F59B]/50 decoration-2 underline-offset-4">Kick & Twitch streamers</span>, podcasts, and music artists lock cash bounties in escrow. You turn their streams, moments, and products into viral TikToks & Reels. Every 1,000 verified views pays out straight to <strong className="text-white font-medium">D17, Flouci, or Bank RIB.</strong>
               </p>
 
               {/* Mind-Blowing Interactive Earnings Visualizer */}
@@ -586,27 +622,29 @@ export default function KlipiLandingPage() {
               </div>
 
               {/* CTAs */}
-              <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
                 <button
-                  onClick={() => {
-                    handleRoleSwitch('Creator');
-                    scrollToSection('waitlist-form');
-                  }}
-                  className="w-full sm:w-auto px-7 py-4 rounded-xl bg-[#00F59B] hover:bg-[#00D680] text-[#052014] font-black text-sm transition-all shadow-xl shadow-[#00F59B]/20 hover:scale-[1.02] flex items-center justify-center gap-2.5"
+                  onClick={() => jumpToWaitlist('Creator')}
+                  className="px-7 py-4 rounded-xl bg-[#00F59B] hover:bg-[#00D680] text-[#052014] font-black text-sm transition-all shadow-xl shadow-[#00F59B]/20 hover:scale-[1.02] flex items-center justify-center gap-2.5 cursor-pointer"
                 >
                   <Award className="w-4 h-4" />
                   <span>Claim Founding Creator Ticket</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
                 <button
-                  onClick={() => {
-                    handleRoleSwitch('Brand');
-                    scrollToSection('waitlist-form');
-                  }}
-                  className="w-full sm:w-auto px-6 py-4 rounded-xl bg-[#12141D] hover:bg-[#181B26] text-white font-bold text-sm border border-white/[0.1] transition-all flex items-center justify-center gap-2"
+                  onClick={() => jumpToWaitlist('Brand')}
+                  className="px-6 py-4 rounded-xl bg-[#12141D] hover:bg-[#181B26] text-white font-bold text-sm border border-white/[0.1] hover:border-white/[0.2] transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <span>Launch a Brand Bounty Pool</span>
+                  <span>Launch a Brand / Streamer Pool</span>
                 </button>
+                <a
+                  href="/demo"
+                  className="px-5 py-4 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 hover:text-white font-bold text-sm border border-white/[0.1] hover:border-[#38BDF8]/40 transition-all flex items-center justify-center gap-2 group"
+                >
+                  <Tv className="w-4 h-4 text-[#38BDF8] group-hover:scale-110 transition-transform" />
+                  <span>Preview App UI (/demo)</span>
+                  <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
+                </a>
               </div>
 
               {/* 4 Technical Metrics Bar */}
@@ -655,13 +693,13 @@ export default function KlipiLandingPage() {
                 {/* Vault Escrow Display */}
                 <div className="p-5 rounded-2xl bg-black/60 border border-white/[0.08] space-y-2">
                   <div className="flex items-center justify-between text-xs font-mono">
-                    <span className="text-slate-400">Active Escrow Target</span>
-                    <span className="text-[#00F59B] font-bold flex items-center gap-1">
-                      <Lock className="w-3 h-3" /> VERIFIED
+                    <span className="text-slate-400">Pilot Cohort Target</span>
+                    <span className="text-[#38BDF8] font-bold flex items-center gap-1">
+                      <Lock className="w-3 h-3" /> PILOT SPEC
                     </span>
                   </div>
                   <div className="text-3xl sm:text-4xl font-black text-white font-mono tracking-tight">
-                    12,000 <span className="text-[#00F59B] text-2xl">DT</span>
+                    5,000 <span className="text-[#00F59B] text-2xl">DT</span>
                   </div>
                   <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
                     <div className="bg-[#00F59B] h-full rounded-full" style={{ width: '85%' }}></div>
@@ -717,15 +755,15 @@ export default function KlipiLandingPage() {
           
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
             <div className="space-y-2 text-left">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#00F59B]/10 border border-[#00F59B]/25 text-[#00F59B] text-xs font-mono font-bold uppercase tracking-wider">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#38BDF8]/10 border border-[#38BDF8]/25 text-[#38BDF8] text-xs font-mono font-bold uppercase tracking-wider">
                 <Sparkles className="w-3.5 h-3.5" />
-                Live Campaign Feed
+                Sample Launch Specifications
               </div>
               <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
                 Upcoming Pilot Bounties for Launch Day
               </h2>
               <p className="text-xs sm:text-sm text-slate-400 max-w-xl">
-                Explore launch campaigns across fintech apps, podcasts, food delivery, trending audio sounds, and streams.
+                Demonstration briefs for Kick streamers, SaaS fintech, podcasts, music drops, and food delivery. Real brand pools activate upon private beta launch.
               </p>
             </div>
 
@@ -792,9 +830,14 @@ export default function KlipiLandingPage() {
 
                     <div className="relative z-10 h-full p-4 flex flex-col justify-between">
                       <div className="flex items-center justify-between">
-                        <span className={`text-[10px] font-bold px-2.5 py-1 rounded-lg border backdrop-blur-md shadow-md ${bounty.tagBg}`}>
-                          {bounty.bountyType}
-                        </span>
+                        <div className="flex items-center gap-1.5">
+                          <span className={`text-[10px] font-bold px-2.5 py-1 rounded-lg border backdrop-blur-md shadow-md ${bounty.tagBg}`}>
+                            {bounty.bountyType}
+                          </span>
+                          <span className="text-[9px] font-mono font-semibold text-slate-300 bg-black/60 border border-white/10 px-2 py-0.5 rounded backdrop-blur-md">
+                            SAMPLE SPEC
+                          </span>
+                        </div>
 
                         <span className="bg-[#08090E]/90 backdrop-blur-md border border-[#00F59B]/40 text-[#00F59B] text-xs font-black px-3 py-1 rounded-xl font-mono shadow-xl">
                           {bounty.cpmTnd.toFixed(2)} DT / 1K
@@ -908,7 +951,7 @@ export default function KlipiLandingPage() {
             </div>
             <div className="flex items-center gap-2 text-xs text-[#00F59B] font-mono bg-[#00F59B]/10 border border-[#00F59B]/25 px-4 py-2 rounded-xl">
               <Users className="w-4 h-4" />
-              <span className="font-bold">49 / 100 Founding Spots Reserved</span>
+              <span className="font-bold">{14 + waitlist.length} / 100 Founding Spots Claimed</span>
             </div>
           </div>
 
@@ -1023,20 +1066,14 @@ export default function KlipiLandingPage() {
 
             <div className="shrink-0 flex flex-col gap-3 w-full sm:w-auto">
               <button
-                onClick={() => {
-                  handleRoleSwitch('Brand');
-                  scrollToSection('waitlist-form');
-                }}
-                className="px-6 py-4 rounded-xl bg-[#00F59B] hover:bg-[#00D680] text-[#052014] font-black text-xs transition shadow-xl shadow-[#00F59B]/20"
+                onClick={() => jumpToWaitlist('Brand')}
+                className="px-6 py-4 rounded-xl bg-[#00F59B] hover:bg-[#00D680] text-[#052014] font-black text-xs transition shadow-xl shadow-[#00F59B]/20 cursor-pointer"
               >
                 Launch a Pilot Bounty
               </button>
               <button
-                onClick={() => {
-                  handleRoleSwitch('Creator');
-                  scrollToSection('waitlist-form');
-                }}
-                className="px-6 py-3.5 rounded-xl bg-[#141722] border border-white/10 hover:border-white/20 text-white text-xs font-bold text-center transition"
+                onClick={() => jumpToWaitlist('Creator')}
+                className="px-6 py-3.5 rounded-xl bg-[#141722] border border-white/10 hover:border-white/20 text-white text-xs font-bold text-center transition cursor-pointer"
               >
                 Apply as a Creator / Clipper
               </button>
@@ -1077,6 +1114,18 @@ export default function KlipiLandingPage() {
                     </p>
                   </div>
 
+                  <div className="flex items-center justify-center gap-2">
+                    {cloudSaved === true ? (
+                      <span className="inline-flex items-center gap-1.5 text-[11px] font-mono font-bold text-[#00F59B] bg-[#00F59B]/10 border border-[#00F59B]/25 px-2.5 py-1 rounded-full">
+                        <Check className="w-3 h-3" /> Cloud Database Verified (Supabase)
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1.5 text-[11px] font-mono font-medium text-amber-300 bg-amber-500/10 border border-amber-500/25 px-2.5 py-1 rounded-full">
+                        <ShieldCheck className="w-3 h-3" /> Verified Local Ticket Stored
+                      </span>
+                    )}
+                  </div>
+
                   <div className="bg-[#14151E] border border-white/10 rounded-xl p-4 flex items-center justify-between gap-2 font-mono text-xs">
                     <span className="text-[#00F59B] font-bold text-sm">{submittedEntry.refCode}</span>
                     <button
@@ -1112,7 +1161,7 @@ export default function KlipiLandingPage() {
                           : 'text-slate-400 hover:text-white'
                       }`}
                     >
-                      I'm a Brand, App, or Show
+                      I'm a Brand, Streamer, or App
                     </button>
                   </div>
 
@@ -1128,12 +1177,13 @@ export default function KlipiLandingPage() {
                       {role === 'Creator' ? 'Full Name or Creator / Editor Handle' : 'Brand, App, Podcast or Channel Name'}
                     </label>
                     <input
+                      id="waitlist-handle-input"
                       type="text"
                       required
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
-                      placeholder={role === 'Creator' ? 'e.g. Farouk Clips (@farouk_tn)' : 'e.g. Yalla Delivery / Tunis Founders Pod'}
-                      className="w-full bg-black/40 border border-white/[0.1] rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-[#00F59B] font-mono transition"
+                      placeholder={role === 'Creator' ? 'e.g. Farouk Clips (@farouk_tn)' : 'e.g. Kamel Gaming / Yalla Delivery'}
+                      className="w-full bg-black/40 border border-white/[0.1] rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-[#00F59B] font-mono transition duration-300"
                     />
                   </div>
 
