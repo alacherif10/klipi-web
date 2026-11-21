@@ -451,18 +451,16 @@ export default function KlipiLandingPage() {
       <header className="sticky top-0 z-40 h-16 bg-[#08090E]/90 backdrop-blur-xl border-b border-white/[0.08]">
         <div className="max-w-7xl mx-auto h-full px-4 sm:px-6 flex items-center justify-between gap-4">
           <div className="flex items-center gap-8">
-            <a href="#top" className="flex items-center gap-3 group">
-              <KlipiLogoMark size="w-8 h-8" />
+            <a href="#top" className="flex items-center gap-3.5 group">
+              <KlipiLogoMark size="w-9 h-9 sm:w-10 sm:h-10" />
               <div className="flex items-center">
                 <span
-                  className="text-xl font-black tracking-[-0.035em] text-white group-hover:text-[#00F59B] transition duration-200"
-                  style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                  className="text-2xl sm:text-[28px] font-black tracking-[-0.04em] text-white group-hover:text-[#00F59B] transition duration-300 select-none"
+                  style={{ fontFamily: "'Space Grotesk', 'Syne', sans-serif" }}
                 >
                   klipi
                 </span>
-                <span className="text-[10px] font-bold font-mono text-[#00F59B] bg-[#00F59B]/10 border border-[#00F59B]/25 px-1.5 py-0.5 rounded ml-1.5 tracking-wider uppercase">
-                  TN
-                </span>
+                <span className="w-2.5 h-2.5 rounded-sm bg-[#00F59B] ml-1 shadow-[0_0_10px_#00F59B] transition-transform duration-300 group-hover:scale-125" />
               </div>
             </a>
 
@@ -1313,26 +1311,24 @@ export default function KlipiLandingPage() {
          ===================================================================== */}
       <footer className="py-12 bg-[#08090E] text-slate-500 text-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3.5">
             <KlipiLogoMark size="w-7 h-7" />
             <div className="flex items-center">
               <span
-                className="text-base font-black tracking-tight text-white"
-                style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                className="text-lg font-black tracking-[-0.04em] text-white"
+                style={{ fontFamily: "'Space Grotesk', 'Syne', sans-serif" }}
               >
                 klipi
               </span>
-              <span className="text-[9px] font-bold font-mono text-[#00F59B] bg-[#00F59B]/10 border border-[#00F59B]/25 px-1.5 py-0.5 rounded ml-1 tracking-wider uppercase">
-                TN
-              </span>
+              <span className="w-2 h-2 rounded-sm bg-[#00F59B] ml-1 shadow-[0_0_8px_#00F59B]" />
             </div>
             <span className="text-slate-600 hidden sm:inline">•</span>
-            <span className="hidden sm:inline text-slate-400">Tunisia's Content Bounty Protocol (Private Beta)</span>
+            <span className="hidden sm:inline text-slate-400">Content Bounty Protocol (Private Beta)</span>
           </div>
 
           <div className="flex items-center gap-6">
-            <span className="text-slate-400">Tunisia’s Creator Escrow Protocol</span>
-            <span>© 2026 Klipi.tn. Pre-Launch Validation Phase.</span>
+            <span className="text-slate-400">Creator Escrow Protocol</span>
+            <span>© 2026 Klipi. Pre-Launch Validation Phase.</span>
           </div>
         </div>
       </footer>
