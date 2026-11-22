@@ -472,9 +472,9 @@ export default function ClipBountyApp() {
           <div className="flex items-center gap-6">
             <a href="/" className="flex items-center group">
               <img
-                src="/klipi-logo.png"
+                src="/klipi-logo.png?v=4"
                 alt="Klipi"
-                className="h-8 sm:h-9 w-auto object-contain transition-transform duration-200 group-hover:scale-[1.02]"
+                className="h-9 sm:h-10 w-auto object-contain transition-transform duration-200 group-hover:scale-[1.02]"
               />
             </a>
 

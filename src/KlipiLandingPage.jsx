@@ -33,13 +33,6 @@ const generateRefCode = (name) => {
   return `KLIPI-${clean}-${rand}`;
 };
 
-// --- OFFICIAL KLIPI BRAND LOGO MARK (Stylized K with Emerald Blade) ---
-const KlipiLogoMark = ({ size = 'w-9 h-9' }) => (
-  <div className={`${size} relative rounded-xl bg-gradient-to-b from-[#181924] to-[#0D0E14] border border-white/[0.12] p-1 flex items-center justify-center shadow-md shadow-black/50 group-hover:border-[#00F59B]/50 transition-all duration-300 shrink-0`}>
-    <img src="/klipi-icon.png" alt="Klipi" className="w-full h-full object-contain" />
-  </div>
-);
-
 // --- PRE-LAUNCH VALIDATION TICKER (Multi-category activity stream) ---
 const RECENT_ACTIVITIES = [
   { id: 1, user: '@farouk_clips', text: 'reserved spot #14 on Founding Creator Waitlist', badge: 'D17 Verified', time: '2m ago' },
@@ -470,11 +463,11 @@ export default function KlipiLandingPage() {
       <header className="sticky top-0 z-40 h-16 bg-[#08090E]/90 backdrop-blur-xl border-b border-white/[0.08]">
         <div className="max-w-7xl mx-auto h-full px-4 sm:px-6 flex items-center justify-between gap-4">
           <div className="flex items-center gap-8">
-            <a href="#top" className="flex items-center group">
+            <a href="#top" className="flex items-center group py-0.5">
               <img
-                src="/klipi-logo.png"
+                src="/klipi-logo.png?v=4"
                 alt="Klipi"
-                className="h-9 sm:h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-[1.03]"
+                className="h-10 sm:h-11 w-auto object-contain transition-transform duration-300 group-hover:scale-[1.04]"
               />
             </a>
 
@@ -546,11 +539,13 @@ export default function KlipiLandingPage() {
             
             {/* Left 7 Columns: Editorial Typographic Command Center */}
             <div className="lg:col-span-7 space-y-6 text-left">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#11131C] border border-white/[0.1] text-xs font-semibold text-slate-300 shadow-sm">
-                <span className="w-2 h-2 rounded-full bg-[#00F59B] live-dot"></span>
-                <span className="font-mono text-[11px] tracking-wide uppercase text-slate-300">Tunisia's 1st Content Bounty Protocol</span>
-                <span className="text-slate-600">•</span>
-                <span className="text-[#00F59B] font-mono text-[11px]">100% Escrow</span>
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#11131C] border border-white/[0.1] text-xs font-semibold text-slate-300 shadow-sm">
+                  <span className="w-2 h-2 rounded-full bg-[#00F59B] live-dot"></span>
+                  <span className="font-mono text-[11px] tracking-wide uppercase text-slate-300">Tunisia's 1st Content Bounty Protocol</span>
+                  <span className="text-slate-600">•</span>
+                  <span className="text-[#00F59B] font-mono text-[11px]">100% Escrow</span>
+                </div>
               </div>
 
               <h1 className="text-4xl sm:text-6xl xl:text-7xl font-black tracking-[-0.04em] text-white leading-[1.02]" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
@@ -665,10 +660,10 @@ export default function KlipiLandingPage() {
                 {/* Vault Pass Top Bar */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
-                    <KlipiLogoMark size="w-7 h-7" />
+                    <img src="/klipi-logo.png?v=4" alt="Klipi" className="h-7 w-auto object-contain" />
                     <div>
-                      <span className="text-xs font-black tracking-wider text-white font-mono block">KLIPI ESCROW PROTOCOL</span>
-                      <span className="text-[10px] text-[#00F59B] font-mono">SERIES TN-2026</span>
+                      <span className="text-[10px] text-[#00F59B] font-mono block">ESCROW PROTOCOL</span>
+                      <span className="text-[9px] text-slate-500 font-mono">SERIES TN-2026</span>
                     </div>
                   </div>
                   <div className="w-10 h-7 rounded-md bg-gradient-to-br from-amber-400/80 to-amber-600/40 border border-amber-300/40 flex items-center justify-center shadow-inner">
@@ -1264,8 +1259,8 @@ export default function KlipiLandingPage() {
             <div className="lg:col-span-5 perspective-1000">
               <div className="hologram-card rounded-3xl border border-white/20 p-6 shadow-2xl space-y-5 text-left bg-gradient-to-br from-[#12141F] to-[#0A0B10]">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <KlipiLogoMark size="w-7 h-7" />
+                  <div className="flex items-center gap-2.5">
+                    <img src="/klipi-logo.png?v=4" alt="Klipi" className="h-6 w-auto object-contain" />
                     <span className="text-xs font-black tracking-wider text-white font-mono">FOUNDING PASS</span>
                   </div>
                   <span className="text-[10px] font-mono font-bold text-[#00F59B] bg-[#00F59B]/10 px-2 py-0.5 rounded border border-[#00F59B]/25">
@@ -1350,9 +1345,9 @@ export default function KlipiLandingPage() {
           <div className="flex items-center gap-4">
             <a href="#top" className="flex items-center group">
               <img
-                src="/klipi-logo.png"
+                src="/klipi-logo.png?v=4"
                 alt="Klipi"
-                className="h-7 w-auto object-contain opacity-90 hover:opacity-100 transition"
+                className="h-8 w-auto object-contain opacity-90 hover:opacity-100 transition"
               />
             </a>
             <span className="text-slate-600 hidden sm:inline">•</span>
