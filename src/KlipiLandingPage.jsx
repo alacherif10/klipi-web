@@ -33,19 +33,10 @@ const generateRefCode = (name) => {
   return `KLIPI-${clean}-${rand}`;
 };
 
-// --- PROPRIETARY KLIPI BRAND LOGO MARK (Film-Cut K with Play Caret) ---
+// --- OFFICIAL KLIPI BRAND LOGO MARK (Stylized K with Emerald Blade) ---
 const KlipiLogoMark = ({ size = 'w-9 h-9' }) => (
-  <div className={`${size} relative rounded-xl bg-gradient-to-b from-[#181924] to-[#0D0E14] border border-white/[0.12] p-1.5 flex items-center justify-center shadow-md shadow-black/50 group-hover:border-[#00F59B]/50 transition-all duration-300 shrink-0`}>
-    <svg viewBox="0 0 28 28" fill="none" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-      {/* Vertical Spine (Film Strip / 9:16 Video Frame Stem) */}
-      <rect x="4" y="4" width="4" height="20" rx="2" fill="#FFFFFF" />
-      {/* Upper Sliced Film Blade */}
-      <path d="M10.5 13L18.5 4.5H23L14 14L10.5 13Z" fill="#00F59B" />
-      {/* Lower Sliced Film Blade (Play Angle) */}
-      <path d="M12.5 12L21.5 23.5H17L9.5 13.5L12.5 12Z" fill="#00F59B" fillOpacity="0.88" />
-      {/* Precision Cut Play Caret Notch */}
-      <path d="M14.5 11.5L18.5 14L14.5 16.5V11.5Z" fill="#0D0E14" />
-    </svg>
+  <div className={`${size} relative rounded-xl bg-gradient-to-b from-[#181924] to-[#0D0E14] border border-white/[0.12] p-1 flex items-center justify-center shadow-md shadow-black/50 group-hover:border-[#00F59B]/50 transition-all duration-300 shrink-0`}>
+    <img src="/klipi-icon.png" alt="Klipi" className="w-full h-full object-contain" />
   </div>
 );
 
@@ -479,17 +470,12 @@ export default function KlipiLandingPage() {
       <header className="sticky top-0 z-40 h-16 bg-[#08090E]/90 backdrop-blur-xl border-b border-white/[0.08]">
         <div className="max-w-7xl mx-auto h-full px-4 sm:px-6 flex items-center justify-between gap-4">
           <div className="flex items-center gap-8">
-            <a href="#top" className="flex items-center gap-3.5 group">
-              <KlipiLogoMark size="w-9 h-9 sm:w-10 sm:h-10" />
-              <div className="flex items-center">
-                <span
-                  className="text-2xl sm:text-[28px] font-black tracking-[-0.04em] text-white group-hover:text-[#00F59B] transition duration-300 select-none"
-                  style={{ fontFamily: "'Space Grotesk', 'Syne', sans-serif" }}
-                >
-                  klipi
-                </span>
-                <span className="w-2.5 h-2.5 rounded-sm bg-[#00F59B] ml-1 shadow-[0_0_10px_#00F59B] transition-transform duration-300 group-hover:scale-125" />
-              </div>
+            <a href="#top" className="flex items-center group">
+              <img
+                src="/klipi-logo.png"
+                alt="Klipi"
+                className="h-9 sm:h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-[1.03]"
+              />
             </a>
 
             <nav className="hidden lg:flex items-center gap-7 text-xs font-semibold text-slate-400">
@@ -1361,19 +1347,16 @@ export default function KlipiLandingPage() {
          ===================================================================== */}
       <footer className="py-12 bg-[#08090E] text-slate-500 text-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-3.5">
-            <KlipiLogoMark size="w-7 h-7" />
-            <div className="flex items-center">
-              <span
-                className="text-lg font-black tracking-[-0.04em] text-white"
-                style={{ fontFamily: "'Space Grotesk', 'Syne', sans-serif" }}
-              >
-                klipi
-              </span>
-              <span className="w-2 h-2 rounded-sm bg-[#00F59B] ml-1 shadow-[0_0_8px_#00F59B]" />
-            </div>
+          <div className="flex items-center gap-4">
+            <a href="#top" className="flex items-center group">
+              <img
+                src="/klipi-logo.png"
+                alt="Klipi"
+                className="h-7 w-auto object-contain opacity-90 hover:opacity-100 transition"
+              />
+            </a>
             <span className="text-slate-600 hidden sm:inline">•</span>
-            <span className="hidden sm:inline text-slate-400">Content Bounty Protocol (Private Beta)</span>
+            <span className="hidden sm:inline text-slate-400 font-mono text-xs">Content Bounty Protocol (Private Beta)</span>
           </div>
 
           <div className="flex items-center gap-6">
