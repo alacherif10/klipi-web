@@ -315,6 +315,16 @@ export default function KlipiLandingPage() {
     return () => clearInterval(timer);
   }, []);
 
+  // Auto-scroll on initial load if URL has #waitlist or #waitlist-form
+  useEffect(() => {
+    if (window.location.hash === '#waitlist' || window.location.hash === '#waitlist-form') {
+      setTimeout(() => {
+        const el = document.getElementById('waitlist') || document.getElementById('waitlist-form');
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 350);
+    }
+  }, []);
+
   const handleRoleSwitch = (nextRole) => {
     setRole(nextRole);
     setSubmittedEntry(null);
@@ -371,7 +381,7 @@ export default function KlipiLandingPage() {
         referred_by: refParam || null,
       };
 
-      const { data, error: sbError } = await supabase.from('waitlist').insert([payload]).select();
+      const { error: sbError } = await supabase.from('waitlist').insert([payload]);
 
       if (sbError) {
         console.warn('Supabase waitlist notice:', sbError);
@@ -381,7 +391,7 @@ export default function KlipiLandingPage() {
           return;
         }
         setCloudSaved(false);
-      } else if (data && data.length > 0) {
+      } else {
         setCloudSaved(true);
       }
     } catch (err) {
@@ -1066,8 +1076,8 @@ export default function KlipiLandingPage() {
       {/* =====================================================================
           MIND-BLOWING APPLICATION ENGINE: LIVE UPDATING FOUNDING PASS
          ===================================================================== */}
-      <section id="waitlist-form" className="py-20 sm:py-28 border-b border-white/[0.08]">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+      <section id="waitlist" className="py-20 sm:py-28 border-b border-white/[0.08]">
+        <div id="waitlist-form" className="max-w-5xl mx-auto px-4 sm:px-6">
           <div className="text-center space-y-2 mb-12">
             <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#00F59B] bg-[#00F59B]/10 border border-[#00F59B]/25 px-3.5 py-1 rounded-full font-mono">
               <Sparkles className="w-3.5 h-3.5" />
