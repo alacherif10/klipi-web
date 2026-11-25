@@ -429,12 +429,6 @@ export default function KlipiLandingPage({ onNavigate, colorMode, onToggleColorM
             onClick={onToggleColorMode}
           />
           <Button
-            label="العربية"
-            variant="ghost"
-            size="sm"
-            onClick={() => onNavigate('/ar')}
-          />
-          <Button
             label="Interactive Demo"
             variant="secondary"
             size="sm"
