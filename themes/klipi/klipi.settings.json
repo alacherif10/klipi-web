@@ -1,0 +1,21 @@
+{
+  "name": "klipi",
+  "like": "neutral",
+  "mode": "both",
+  "settings": [
+    {
+      "thing": "accent",
+      "value": "#0e9d6e",
+      "source": "dial"
+    },
+    {
+      "thing": "background-color",
+      "value": "#43b38e",
+      "source": "property",
+      "on": "progress-bar-fill",
+      "mode": "dark"
+    }
+  ],
+  "lifted": [],
+  "palette": "a172a8b98e8341bce85057b0765ebcde4e313d5d5ea8543d63eedd0a2bccda95"
+}
