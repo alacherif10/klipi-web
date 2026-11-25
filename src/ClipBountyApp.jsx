@@ -280,11 +280,10 @@ export default function ClipBountyApp({ onNavigate, colorMode, onToggleColorMode
             <img
               src="/klipi-logo.png"
               alt="Klipi"
-              className="h-7 w-auto object-contain"
+              className="h-8 w-auto object-contain"
             />
           }
-          heading="Klipi App"
-          subheading="Interactive Sandbox"
+          subheading="Sandbox"
           headingHref="/"
         />
       }

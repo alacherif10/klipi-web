@@ -403,11 +403,9 @@ export default function KlipiLandingPage({ onNavigate, colorMode, onToggleColorM
             <img
               src="/klipi-logo.png"
               alt="Klipi"
-              className="h-7 w-auto object-contain"
+              className="h-8 w-auto object-contain"
             />
           }
-          heading="Klipi"
-          subheading="klipi.tn"
           headingHref="/"
         />
       }
