@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Theme } from '@astryxdesign/core/theme';
 import { themes, defaultThemeSlug } from './astryx-themes';
 import KlipiLandingPage from './KlipiLandingPage';
+import KlipiLandingPageAr from './KlipiLandingPageAr';
 import ClipBountyApp from './ClipBountyApp';
 
 export default function App() {
@@ -30,6 +31,12 @@ export default function App() {
     <Theme theme={themes[defaultThemeSlug]} mode={colorMode}>
       {route === '/demo' ? (
         <ClipBountyApp
+          onNavigate={navigate}
+          colorMode={colorMode}
+          onToggleColorMode={toggleColorMode}
+        />
+      ) : route === '/ar' ? (
+        <KlipiLandingPageAr
           onNavigate={navigate}
           colorMode={colorMode}
           onToggleColorMode={toggleColorMode}
