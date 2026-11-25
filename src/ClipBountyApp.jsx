@@ -272,13 +272,15 @@ export default function ClipBountyApp({ onNavigate, colorMode, onToggleColorMode
     [handleSubmissionDecision],
   );
 
+  const logoSrc = colorMode === 'light' ? '/klipi-logo-light.png' : '/klipi-logo.png';
+
   const topNav = (
     <TopNav
       heading={
         <TopNavHeading
           logo={
             <img
-              src="/klipi-logo.png"
+              src={logoSrc}
               alt="Klipi"
               className="h-8 w-auto object-contain"
             />

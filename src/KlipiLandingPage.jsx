@@ -395,13 +395,15 @@ export default function KlipiLandingPage({ onNavigate, colorMode, onToggleColorM
     [],
   );
 
+  const logoSrc = colorMode === 'light' ? '/klipi-logo-light.png' : '/klipi-logo.png';
+
   const topNav = (
     <TopNav
       heading={
         <TopNavHeading
           logo={
             <img
-              src="/klipi-logo.png"
+              src={logoSrc}
               alt="Klipi"
               className="h-8 w-auto object-contain"
             />
@@ -939,7 +941,7 @@ export default function KlipiLandingPage({ onNavigate, colorMode, onToggleColorM
       <Section variant="section" paddingBlock={6}>
         <HStack maxWidth={1200} paddingInline={4} hAlign="between" vAlign="center" wrap="wrap" gap={4} className="mx-auto">
           <HStack gap={2} vAlign="center">
-            <img src="/klipi-logo.png" alt="Klipi" className="h-6 w-auto object-contain" />
+            <img src={logoSrc} alt="Klipi" className="h-6 w-auto object-contain" />
             <Text type="supporting" color="secondary">
               klipi.tn • Tunisia&apos;s Content Rewards &amp; Bounty Marketplace
             </Text>
